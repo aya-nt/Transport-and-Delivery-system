@@ -1,9 +1,11 @@
 "use client"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import BackButton from "@/components/layout/back-button"
 
 export default function DriversPage() {
+  const router = useRouter()
   const [drivers] = useState([
     {
       id: 1,
@@ -27,7 +29,10 @@ export default function DriversPage() {
 
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold text-text-primary">Drivers</h1>
-        <button className="px-6 py-3 bg-primary text-white rounded-lg font-semibold hover:bg-primary-dark hover:shadow-lg hover:scale-105 active:scale-95 transition-all duration-200">
+        <button
+          onClick={() => router.push("/drivers/create")}
+          className="px-6 py-3 bg-primary text-white rounded-lg font-semibold hover:bg-primary-dark hover:shadow-lg hover:scale-105 active:scale-95 transition-all duration-200"
+        >
           Add Driver
         </button>
       </div>

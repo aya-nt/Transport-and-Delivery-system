@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
-import { LayoutDashboard, Package, Satellite, PlusCircle, AlertCircle, Settings, LogOut } from "lucide-react"
+import { LayoutDashboard, Package, Satellite, PlusCircle, AlertCircle, Settings, LogOut, Users, Car, Truck } from "lucide-react"
 
 export function Sidebar() {
   const pathname = usePathname()
@@ -21,6 +21,9 @@ export function Sidebar() {
     { href: "/shipments/journal", icon: Package, label: "Shipping" },
     { href: "/tracking", icon: Satellite, label: "Tracking" },
     { href: "/shipments/create", icon: PlusCircle, label: "Add Shipment" },
+    { href: "/clients", icon: Users, label: "Clients" },
+    { href: "/vehicles", icon: Truck, label: "Vehicles" },
+    { href: "/drivers", icon: Car, label: "Drivers" },
     { href: "/incidents", icon: AlertCircle, label: "Need Help?" },
     { href: "/settings/profile", icon: Settings, label: "Setting" },
   ]

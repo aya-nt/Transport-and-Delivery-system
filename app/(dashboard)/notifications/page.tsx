@@ -1,4 +1,4 @@
-import { Package, X, Truck, MapPin, CheckCircle } from "lucide-react"
+import { Package, AlertCircle, Truck, Satellite, PlusCircle } from "lucide-react"
 import BackButton from "@/components/layout/back-button"
 
 export default function NotificationsPage() {
@@ -15,8 +15,8 @@ export default function NotificationsPage() {
         <div className="divide-y divide-gray-100">
           <div className="p-6 hover:bg-gray-50 transition-colors cursor-pointer">
             <div className="flex items-start gap-4">
-              <div className="w-14 h-14 bg-green-50 rounded-xl flex items-center justify-center flex-shrink-0">
-                <Package className="w-8 h-8 text-green-600" />
+              <div className="w-14 h-14 bg-gray-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                <Package className="w-8 h-8 text-gray-600" />
               </div>
               <div className="flex-1">
                 <div className="flex items-start justify-between mb-2">
@@ -35,8 +35,8 @@ export default function NotificationsPage() {
 
           <div className="p-6 hover:bg-gray-50 transition-colors cursor-pointer">
             <div className="flex items-start gap-4">
-              <div className="w-14 h-14 bg-blue-50 rounded-xl flex items-center justify-center flex-shrink-0">
-                <Package className="w-8 h-8 text-blue-600" />
+              <div className="w-14 h-14 bg-gray-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                <Package className="w-8 h-8 text-gray-600" />
               </div>
               <div className="flex-1">
                 <div className="flex items-start justify-between mb-2">
@@ -55,8 +55,8 @@ export default function NotificationsPage() {
 
           <div className="p-6 hover:bg-gray-50 transition-colors cursor-pointer">
             <div className="flex items-start gap-4">
-              <div className="w-14 h-14 bg-red-50 rounded-xl flex items-center justify-center flex-shrink-0">
-                <X className="w-8 h-8 text-red-600" />
+              <div className="w-14 h-14 bg-gray-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                <AlertCircle className="w-8 h-8 text-gray-600" />
               </div>
               <div className="flex-1">
                 <div className="flex items-start justify-between mb-2">
@@ -73,8 +73,8 @@ export default function NotificationsPage() {
 
           <div className="p-6 hover:bg-gray-50 transition-colors cursor-pointer">
             <div className="flex items-start gap-4">
-              <div className="w-14 h-14 bg-purple-50 rounded-xl flex items-center justify-center flex-shrink-0">
-                <Truck className="w-8 h-8 text-purple-600" />
+              <div className="w-14 h-14 bg-gray-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                <Truck className="w-8 h-8 text-gray-600" />
               </div>
               <div className="flex-1">
                 <div className="flex items-start justify-between mb-2">
@@ -93,8 +93,8 @@ export default function NotificationsPage() {
 
           <div className="p-6 hover:bg-gray-50 transition-colors cursor-pointer">
             <div className="flex items-start gap-4">
-              <div className="w-14 h-14 bg-orange-50 rounded-xl flex items-center justify-center flex-shrink-0">
-                <MapPin className="w-8 h-8 text-orange-600" />
+              <div className="w-14 h-14 bg-gray-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                <Satellite className="w-8 h-8 text-gray-600" />
               </div>
               <div className="flex-1">
                 <div className="flex items-start justify-between mb-2">
@@ -111,8 +111,8 @@ export default function NotificationsPage() {
 
           <div className="p-6 hover:bg-gray-50 transition-colors cursor-pointer">
             <div className="flex items-start gap-4">
-              <div className="w-14 h-14 bg-green-50 rounded-xl flex items-center justify-center flex-shrink-0">
-                <CheckCircle className="w-8 h-8 text-green-600" />
+              <div className="w-14 h-14 bg-gray-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                <PlusCircle className="w-8 h-8 text-gray-600" />
               </div>
               <div className="flex-1">
                 <div className="flex items-start justify-between mb-2">

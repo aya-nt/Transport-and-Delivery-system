@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-import { Package, X, User, Phone, MessageCircle } from "lucide-react"
+import { Package, AlertCircle, User, Phone, MessageCircle, Truck, Satellite, PlusCircle } from "lucide-react"
 import { useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
@@ -100,12 +100,22 @@ export default function TrackingPage() {
                     <p className="font-medium">6 kg</p>
                   </div>
                   <div>
+                    <p className="text-sm text-text-secondary mb-1">Volume</p>
+                    <p className="font-medium">0.5 m³</p>
+                  </div>
+                  <div>
                     <p className="text-sm text-text-secondary mb-1">Price</p>
                     <p className="font-medium">150$</p>
                   </div>
+                </div>
+                <div className="grid grid-cols-3 gap-4">
                   <div>
                     <p className="text-sm text-text-secondary mb-1">Ordered Date</p>
                     <p className="font-medium">13 May 2023</p>
+                  </div>
+                  <div className="col-span-2">
+                    <p className="text-sm text-text-secondary mb-1">Description</p>
+                    <p className="font-medium">Laptop delivery package</p>
                   </div>
                 </div>
                 <div className="mt-6 flex items-center gap-4 pt-4 border-t border-border">
@@ -229,7 +239,7 @@ export default function TrackingPage() {
                 desc: "Parcel (ID 6411 1122) has been cancelled",
                 time: "2 Hours ago",
                 action: "Cancelled",
-                icon: X,
+                icon: AlertCircle,
                 parcelId: "6411-1122",
               },
             ].map((notification, index) => (
@@ -239,8 +249,8 @@ export default function TrackingPage() {
                 className="border-b border-border pb-4 last:border-0 hover:bg-gray-50 p-2 rounded-lg transition-colors cursor-pointer"
               >
                 <div className="flex items-start gap-3">
-                  <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <notification.icon className="w-5 h-5 text-primary" />
+                  <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <notification.icon className="w-5 h-5 text-gray-600" />
                   </div>
                   <div className="flex-1">
                     <h4 className="font-medium text-sm mb-1">{notification.title}</h4>

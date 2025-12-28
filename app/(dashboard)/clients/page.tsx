@@ -46,7 +46,10 @@ export default function ClientsPage() {
 
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold text-text-primary">Clients</h1>
-        <button className="px-6 py-3 bg-primary text-white rounded-lg font-semibold hover:bg-primary-dark hover:shadow-lg hover:scale-105 active:scale-95 transition-all duration-200">
+        <button
+          onClick={() => router.push("/clients/create")}
+          className="px-6 py-3 bg-primary text-white rounded-lg font-semibold hover:bg-primary-dark hover:shadow-lg hover:scale-105 active:scale-95 transition-all duration-200"
+        >
           Add Client
         </button>
       </div>

@@ -5,7 +5,7 @@ import type React from "react"
 import Link from "next/link"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { Search, Bell, User, Settings, Star, LogOut, Package, X } from "lucide-react"
+import { Search, Bell, User, Settings, Star, LogOut, Package, AlertCircle, Truck, Satellite, PlusCircle } from "lucide-react"
 
 export function Header() {
   const [showNotifications, setShowNotifications] = useState(false)
@@ -66,8 +66,8 @@ export function Header() {
               <div className="max-h-96 overflow-y-auto">
                 <div className="p-5 hover:bg-gray-50 transition-colors cursor-pointer border-b border-gray-100">
                   <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 bg-green-50 rounded-xl flex items-center justify-center flex-shrink-0">
-                      <Package className="w-6 h-6 text-green-600" />
+                    <div className="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                      <Package className="w-6 h-6 text-gray-600" />
                     </div>
                     <div className="flex-1">
                       <h4 className="font-semibold text-text-primary">Package Arrived</h4>
@@ -80,8 +80,8 @@ export function Header() {
 
                 <div className="p-5 hover:bg-gray-50 transition-colors cursor-pointer border-b border-gray-100">
                   <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center flex-shrink-0">
-                      <Package className="w-6 h-6 text-blue-600" />
+                    <div className="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                      <Package className="w-6 h-6 text-gray-600" />
                     </div>
                     <div className="flex-1">
                       <h4 className="font-semibold text-text-primary">Package Received At Post</h4>
@@ -94,8 +94,8 @@ export function Header() {
 
                 <div className="p-5 hover:bg-gray-50 transition-colors cursor-pointer">
                   <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 bg-red-50 rounded-xl flex items-center justify-center flex-shrink-0">
-                      <X className="w-6 h-6 text-red-600" />
+                    <div className="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                      <AlertCircle className="w-6 h-6 text-gray-600" />
                     </div>
                     <div className="flex-1">
                       <h4 className="font-semibold text-text-primary">Order Cancelled</h4>
