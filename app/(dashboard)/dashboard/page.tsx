@@ -4,8 +4,11 @@ import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { Package, Truck, DollarSign, AlertTriangle, Bike } from "lucide-react"
 
+import { StatisticsCharts } from "@/components/dashboard/statistics-charts"
+
 export default function DashboardPage() {
   const router = useRouter()
+
 
   const quickActions = [
     {
@@ -143,6 +146,8 @@ export default function DashboardPage() {
           ))}
         </div>
       </div>
+
+      <StatisticsCharts />
     </div>
   )
 }
