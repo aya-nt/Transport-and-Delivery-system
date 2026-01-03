@@ -2,19 +2,54 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { userApi } from "@/lib/api"
 
 export default function ProfilePage() {
   const [formData, setFormData] = useState({
-    name: "Ben Cutting",
-    email: "ben.cutting@company.com",
-    phone: "+1 234 567 8900",
+    username: "",
+    email: "",
+    first_name: "",
+    last_name: "",
   })
+  const [loading, setLoading] = useState(true)
+  const [saving, setSaving] = useState(false)
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    console.log("[v0] Profile updated:", formData)
+  useEffect(() => {
+    fetchUser()
+  }, [])
+
+  async function fetchUser() {
+    try {
+      const user = await userApi.getMe()
+      setFormData({
+        username: user.username || "",
+        email: user.email || "",
+        first_name: user.first_name || "",
+        last_name: user.last_name || "",
+      })
+    } catch (error) {
+      console.error('Failed to fetch user:', error)
+    } finally {
+      setLoading(false)
+    }
   }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setSaving(true)
+    try {
+      await userApi.update(formData)
+      alert('Profile updated successfully!')
+    } catch (error) {
+      console.error('Failed to update profile:', error)
+      alert('Failed to update profile')
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  if (loading) return <div className="text-center py-8">Loading...</div>
 
   return (
     <div className="space-y-6 max-w-2xl">
@@ -23,14 +58,34 @@ export default function ProfilePage() {
       <div className="bg-surface rounded-xl border border-border shadow-sm p-6">
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label className="block text-sm font-medium mb-2">Full Name</label>
+            <label className="block text-sm font-medium mb-2">Username</label>
             <input
               type="text"
-              value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              className="w-full px-4 py-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary hover:border-primary transition-all"
-              placeholder="Enter your name"
+              value={formData.username}
+              disabled
+              className="w-full px-4 py-3 border border-border rounded-lg bg-gray-100 cursor-not-allowed"
             />
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium mb-2">First Name</label>
+              <input
+                type="text"
+                value={formData.first_name}
+                onChange={(e) => setFormData({ ...formData, first_name: e.target.value })}
+                className="w-full px-4 py-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-2">Last Name</label>
+              <input
+                type="text"
+                value={formData.last_name}
+                onChange={(e) => setFormData({ ...formData, last_name: e.target.value })}
+                className="w-full px-4 py-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+              />
+            </div>
           </div>
 
           <div>
@@ -39,28 +94,17 @@ export default function ProfilePage() {
               type="email"
               value={formData.email}
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-              className="w-full px-4 py-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary hover:border-primary transition-all"
-              placeholder="your@email.com"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium mb-2">Phone Number</label>
-            <input
-              type="tel"
-              value={formData.phone}
-              onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-              className="w-full px-4 py-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary hover:border-primary transition-all"
-              placeholder="+1 234 567 8900"
+              className="w-full px-4 py-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
             />
           </div>
 
           <div className="flex justify-end">
             <button
               type="submit"
-              className="px-6 py-3 bg-primary text-white rounded-lg font-semibold hover:bg-primary-dark hover:shadow-lg hover:scale-105 active:scale-95 transition-all duration-200"
+              disabled={saving}
+              className="px-6 py-3 bg-primary text-white rounded-lg font-semibold hover:bg-primary-dark hover:shadow-lg hover:scale-105 active:scale-95 transition-all duration-200 disabled:opacity-50"
             >
-              Save Changes
+              {saving ? "Saving..." : "Save Changes"}
             </button>
           </div>
         </form>

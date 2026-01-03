@@ -3,15 +3,95 @@
 import type React from "react"
 
 import Link from "next/link"
-import { useState } from "react"
+import { useState, useEffect, useRef } from "react"
 import { useRouter } from "next/navigation"
-import { Search, Bell, User, Settings, Star, LogOut, Package, AlertCircle, Truck, Satellite, PlusCircle } from "lucide-react"
+import { Search, Bell, User, Settings, LogOut, Package, AlertCircle } from "lucide-react"
+import { shipmentsApi, incidentsApi, invoicesApi, userApi } from "@/lib/api"
 
 export function Header() {
   const [showNotifications, setShowNotifications] = useState(false)
   const [showProfile, setShowProfile] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
+  const [notifications, setNotifications] = useState<any[]>([])
+  const [user, setUser] = useState<any>(null)
+  const notifRef = useRef<HTMLDivElement>(null)
+  const profileRef = useRef<HTMLDivElement>(null)
   const router = useRouter()
+
+  useEffect(() => {
+    fetchNotifications()
+    fetchUser()
+    
+    function handleClickOutside(event: MouseEvent) {
+      if (notifRef.current && !notifRef.current.contains(event.target as Node)) {
+        setShowNotifications(false)
+      }
+      if (profileRef.current && !profileRef.current.contains(event.target as Node)) {
+        setShowProfile(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
+
+  async function fetchUser() {
+    try {
+      const userData = await userApi.getMe()
+      setUser(userData)
+    } catch (error) {
+      console.error('Failed to fetch user:', error)
+    }
+  }
+
+  async function fetchNotifications() {
+    try {
+      const [shipments, incidents, invoices] = await Promise.all([
+        shipmentsApi.getAll(),
+        incidentsApi.getAll(),
+        invoicesApi.getAll()
+      ])
+
+      const notifs: any[] = []
+
+      shipments.slice(0, 1).forEach((s: any) => {
+        notifs.push({
+          icon: Package,
+          title: s.status === 'DELIVERED' ? 'Colis livré' : 'Expédition en cours',
+          desc: `N° ${s.tracking_number}`,
+          time: new Date(s.date).toLocaleDateString('fr-FR'),
+          link: `/tracking?tracking=${s.tracking_number}`,
+          color: 'gray'
+        })
+      })
+
+      incidents.filter((i: any) => i.status === 'OPEN').slice(0, 1).forEach((i: any) => {
+        notifs.push({
+          icon: AlertCircle,
+          title: 'Incident signalé',
+          desc: i.description.substring(0, 40) + '...',
+          time: new Date(i.date).toLocaleDateString('fr-FR'),
+          link: `/incidents/view/${i.id}`,
+          color: 'red'
+        })
+      })
+
+      invoices.filter((inv: any) => inv.status === 'UNPAID').slice(0, 1).forEach((inv: any) => {
+        notifs.push({
+          icon: AlertCircle,
+          title: 'Facture impayée',
+          desc: `${inv.amount_ttc} DA`,
+          time: new Date(inv.date).toLocaleDateString('fr-FR'),
+          link: `/billing/invoices/edit/${inv.id}`,
+          color: 'yellow'
+        })
+      })
+
+      setNotifications(notifs.slice(0, 3))
+    } catch (error) {
+      console.error('Failed to fetch notifications:', error)
+    }
+  }
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
@@ -40,7 +120,7 @@ export function Header() {
       </form>
 
       <div className="flex items-center gap-6">
-        <div className="relative">
+        <div className="relative" ref={notifRef}>
           <button
             onClick={() => {
               setShowNotifications(!showNotifications)
@@ -60,57 +140,40 @@ export function Header() {
                   href="/notifications"
                   className="text-sm text-primary hover:underline font-semibold hover:scale-105 transition-transform"
                 >
-                  See all
+                  Voir tout
                 </Link>
               </div>
               <div className="max-h-96 overflow-y-auto">
-                <div className="p-5 hover:bg-gray-50 transition-colors cursor-pointer border-b border-gray-100">
-                  <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                      <Package className="w-6 h-6 text-gray-600" />
-                    </div>
-                    <div className="flex-1">
-                      <h4 className="font-semibold text-text-primary">Package Arrived</h4>
-                      <p className="text-sm text-text-secondary mt-1">Parcel (ID 1234 8765) has been delivered</p>
-                      <p className="text-xs text-text-secondary mt-2">10 minutes ago</p>
-                      <button className="text-sm text-yellow-600 font-semibold mt-2 hover:underline">Reorder</button>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="p-5 hover:bg-gray-50 transition-colors cursor-pointer border-b border-gray-100">
-                  <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                      <Package className="w-6 h-6 text-gray-600" />
-                    </div>
-                    <div className="flex-1">
-                      <h4 className="font-semibold text-text-primary">Package Received At Post</h4>
-                      <p className="text-sm text-text-secondary mt-1">Parcel (ID 6457 2244) has been received</p>
-                      <p className="text-xs text-text-secondary mt-2">1 Hour ago</p>
-                      <button className="text-sm text-yellow-600 font-semibold mt-2 hover:underline">Reorder</button>
+                {notifications.map((notif, index) => (
+                  <div 
+                    key={index}
+                    onClick={() => router.push(notif.link)}
+                    className="p-5 hover:bg-gray-50 transition-colors cursor-pointer border-b border-gray-100 last:border-0"
+                  >
+                    <div className="flex items-start gap-4">
+                      <div className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 ${
+                        notif.color === 'red' ? 'bg-red-100' :
+                        notif.color === 'yellow' ? 'bg-yellow-100' : 'bg-gray-100'
+                      }`}>
+                        <notif.icon className={`w-6 h-6 ${
+                          notif.color === 'red' ? 'text-error' :
+                          notif.color === 'yellow' ? 'text-warning' : 'text-gray-600'
+                        }`} />
+                      </div>
+                      <div className="flex-1">
+                        <h4 className="font-semibold text-text-primary">{notif.title}</h4>
+                        <p className="text-sm text-text-secondary mt-1">{notif.desc}</p>
+                        <p className="text-xs text-text-secondary mt-2">{notif.time}</p>
+                      </div>
                     </div>
                   </div>
-                </div>
-
-                <div className="p-5 hover:bg-gray-50 transition-colors cursor-pointer">
-                  <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                      <AlertCircle className="w-6 h-6 text-gray-600" />
-                    </div>
-                    <div className="flex-1">
-                      <h4 className="font-semibold text-text-primary">Order Cancelled</h4>
-                      <p className="text-sm text-text-secondary mt-1">Parcel (ID 6411 1122) has been cancelled</p>
-                      <p className="text-xs text-text-secondary mt-2">2 Hours ago</p>
-                      <span className="text-sm text-red-600 font-semibold mt-2">Cancelled</span>
-                    </div>
-                  </div>
-                </div>
+                ))}
               </div>
             </div>
           )}
         </div>
 
-        <div className="relative">
+        <div className="relative" ref={profileRef}>
           <button
             onClick={() => {
               setShowProfile(!showProfile)
@@ -119,11 +182,13 @@ export function Header() {
             className="flex items-center gap-3 hover:bg-gray-100 rounded-xl px-3 py-2 transition-all hover:scale-105 active:scale-95"
           >
             <div className="w-11 h-11 bg-primary rounded-full flex items-center justify-center text-white font-bold transition-transform hover:rotate-12 shadow-md">
-              BC
+              {user ? (user.first_name?.[0] || user.username[0]).toUpperCase() + (user.last_name?.[0] || user.username[1] || '').toUpperCase() : 'U'}
             </div>
             <div className="text-left">
-              <p className="font-semibold text-sm text-text-primary">Ben Cutting</p>
-              <p className="text-xs text-text-secondary">Administrator</p>
+              <p className="font-semibold text-sm text-text-primary">
+                {user?.first_name && user?.last_name ? `${user.first_name} ${user.last_name}` : user?.username || 'User'}
+              </p>
+              <p className="text-xs text-text-secondary">{user?.role || 'Agent'}</p>
             </div>
             <span className={`text-text-secondary transition-transform text-sm ${showProfile ? "rotate-180" : ""}`}>
               ▼
@@ -135,11 +200,13 @@ export function Header() {
               <div className="p-6 border-b border-gray-200">
                 <div className="flex items-center gap-3 mb-2">
                   <div className="w-14 h-14 bg-primary rounded-full flex items-center justify-center text-white font-bold text-lg">
-                    BC
+                    {user ? (user.first_name?.[0] || user.username[0]).toUpperCase() + (user.last_name?.[0] || user.username[1] || '').toUpperCase() : 'U'}
                   </div>
                   <div>
-                    <p className="font-bold text-text-primary">Ben Cutting</p>
-                    <p className="text-sm text-text-secondary">ben.cutting@company.com</p>
+                    <p className="font-bold text-text-primary">
+                      {user?.first_name && user?.last_name ? `${user.first_name} ${user.last_name}` : user?.username || 'User'}
+                    </p>
+                    <p className="text-sm text-text-secondary">{user?.email || 'user@company.com'}</p>
                   </div>
                 </div>
               </div>
@@ -157,13 +224,6 @@ export function Header() {
                 >
                   <Settings className="w-5 h-5" />
                   <span>Settings</span>
-                </Link>
-                <Link
-                  href="/favorites"
-                  className="w-full text-left px-4 py-3 rounded-xl hover:bg-gray-100 transition-all text-text-primary flex items-center gap-3 font-medium hover:scale-105"
-                >
-                  <Star className="w-5 h-5" />
-                  <span>Favorites</span>
                 </Link>
               </div>
               <div className="p-3 border-t border-gray-200">

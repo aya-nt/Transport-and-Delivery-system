@@ -1,13 +1,96 @@
 "use client"
 
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { Package, Truck, DollarSign, AlertTriangle, Bike } from "lucide-react"
-
 import { StatisticsCharts } from "@/components/dashboard/statistics-charts"
+import { dashboardApi, shipmentsApi } from "@/lib/api"
+import { useUser } from "@/hooks/useUser"
 
 export default function DashboardPage() {
   const router = useRouter()
+  const { user } = useUser()
+  const [stats, setStats] = useState({
+    totalShipments: 0,
+    activeDeliveries: 0,
+    incidents: 0,
+    revenue: "0",
+    pendingCount: 0,
+    inTransitCount: 0,
+  })
+  const [myShipments, setMyShipments] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        if (user?.role === 'DRIVER') {
+          const shipments = await shipmentsApi.getAll()
+          setMyShipments(shipments)
+        } else {
+          const data = await dashboardApi.getStats()
+          setStats(data)
+        }
+      } catch (error) {
+        console.error('Failed to fetch data:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+    if (user) fetchData()
+  }, [user])
+
+  // Driver Dashboard
+  if (user?.role === 'DRIVER') {
+    return (
+      <div className="space-y-6">
+        <h1 className="text-3xl font-bold text-text-primary">My Deliveries</h1>
+        
+        {loading ? (
+          <div className="text-center py-8">Loading...</div>
+        ) : myShipments.length === 0 ? (
+          <div className="bg-white p-12 rounded-xl text-center">
+            <Package className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+            <p className="text-gray-500">No deliveries assigned yet</p>
+          </div>
+        ) : (
+          <div className="bg-white rounded-xl shadow-sm border">
+            <table className="w-full">
+              <thead className="bg-gray-50 border-b">
+                <tr>
+                  <th className="px-6 py-4 text-left text-sm font-semibold">Tracking #</th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold">Client</th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold">Destination</th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold">Status</th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {myShipments.map((shipment: any) => (
+                  <tr key={shipment.id} className="border-b hover:bg-gray-50">
+                    <td className="px-6 py-4 font-medium">{shipment.tracking_number}</td>
+                    <td className="px-6 py-4">{shipment.client_name}</td>
+                    <td className="px-6 py-4">{shipment.destination_name}</td>
+                    <td className="px-6 py-4">
+                      <span className="px-3 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-700">
+                        {shipment.status}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <Link href={`/shipments/edit/${shipment.id}`} className="text-primary hover:underline">
+                        Update Status
+                      </Link>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+    )
+  }
 
 
   const quickActions = [
@@ -22,7 +105,7 @@ export default function DashboardPage() {
       primary: false,
     },
     {
-      label: "New Invoice",
+      label: "View Invoices",
       onClick: () => router.push("/billing/invoices"),
       primary: false,
     },
@@ -36,7 +119,7 @@ export default function DashboardPage() {
   const metricCards = [
     {
       title: "Total Shipments",
-      value: "1,234",
+      value: loading ? "..." : stats.totalShipments.toString(),
       change: "+12% from last month",
       changeType: "success",
       link: "/shipments/journal",
@@ -44,15 +127,15 @@ export default function DashboardPage() {
     },
     {
       title: "Active Deliveries",
-      value: "56",
-      change: "8 pending pickup",
+      value: loading ? "..." : stats.activeDeliveries.toString(),
+      change: `${loading ? "..." : stats.pendingCount} pending pickup`,
       changeType: "warning",
       link: "/tracking",
       icon: Truck,
     },
     {
       title: "Revenue",
-      value: "$45,678",
+      value: loading ? "..." : `${parseFloat(stats.revenue).toLocaleString()} DA`,
       change: "+8% from last month",
       changeType: "success",
       link: "/billing/invoices",
@@ -60,7 +143,7 @@ export default function DashboardPage() {
     },
     {
       title: "Incidents",
-      value: "3",
+      value: loading ? "..." : stats.incidents.toString(),
       change: "Requires attention",
       changeType: "error",
       link: "/incidents",

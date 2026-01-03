@@ -1,6 +1,38 @@
+"use client"
+
+import { useState } from "react"
+import { useRouter } from "next/navigation"
 import BackButton from "@/components/layout/back-button"
+import { driversApi } from "@/lib/api"
 
 export default function CreateDriverPage() {
+  const router = useRouter()
+  const [formData, setFormData] = useState({
+    name: "",
+    license_number: "",
+    phone: "",
+  })
+  const [loading, setLoading] = useState(false)
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setLoading(true)
+    
+    try {
+      await driversApi.create(formData)
+      router.push("/drivers")
+    } catch (error) {
+      console.error('Failed to create driver:', error)
+      alert('Failed to create driver. Please try again.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value })
+  }
+
   return (
     <div className="space-y-6">
       <BackButton />
@@ -8,12 +40,16 @@ export default function CreateDriverPage() {
       <h1 className="text-3xl font-bold text-text-primary">Add Driver</h1>
 
       <div className="bg-surface rounded-xl border border-border shadow-sm p-6">
-        <form className="space-y-6">
+        <form className="space-y-6" onSubmit={handleSubmit}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label className="block text-sm font-medium mb-2">Full Name</label>
               <input
                 type="text"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                required
                 className="w-full px-4 py-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
                 placeholder="Enter driver's full name"
               />
@@ -22,71 +58,47 @@ export default function CreateDriverPage() {
               <label className="block text-sm font-medium mb-2">License Number</label>
               <input
                 type="text"
+                name="license_number"
+                value={formData.license_number}
+                onChange={handleChange}
+                required
+                pattern="\d{8}"
+                maxLength={8}
                 className="w-full px-4 py-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-                placeholder="Enter license number"
+                placeholder="01123456 (8 chiffres)"
               />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm font-medium mb-2">Phone Number</label>
-              <input
-                type="tel"
-                className="w-full px-4 py-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-                placeholder="+1 234 567 8900"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-2">Email</label>
-              <input
-                type="email"
-                className="w-full px-4 py-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-                placeholder="driver@example.com"
-              />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm font-medium mb-2">Status</label>
-              <select className="w-full px-4 py-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
-                <option value="">Select status</option>
-                <option value="available">Available</option>
-                <option value="on-route">On Route</option>
-                <option value="off-duty">Off Duty</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-2">License Expiry Date</label>
-              <input
-                type="date"
-                className="w-full px-4 py-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-              />
+              <p className="text-xs text-gray-500 mt-1">Format: 2 chiffres wilaya + 6 chiffres</p>
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-2">Address</label>
-            <textarea
-              rows={3}
+            <label className="block text-sm font-medium mb-2">Phone Number</label>
+            <input
+              type="tel"
+              name="phone"
+              value={formData.phone}
+              onChange={handleChange}
+              required
+              pattern="[0-9]{10}"
               className="w-full px-4 py-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-              placeholder="Enter driver's address"
+              placeholder="0555123456 (10 chiffres)"
             />
           </div>
 
           <div className="flex justify-end gap-4">
             <button
               type="button"
+              onClick={() => router.push("/drivers")}
               className="px-6 py-3 border border-border rounded-lg font-semibold hover:bg-gray-50 transition-all duration-200 hover:scale-105 active:scale-95 hover:shadow-sm"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-6 py-3 bg-primary text-white rounded-lg font-semibold hover:bg-primary-dark transition-all duration-200 hover:scale-105 active:scale-95 shadow-sm hover:shadow-md"
+              disabled={loading}
+              className="px-6 py-3 bg-primary text-white rounded-lg font-semibold hover:bg-primary-dark transition-all duration-200 hover:scale-105 active:scale-95 shadow-sm hover:shadow-md disabled:opacity-50"
             >
-              Add Driver
+              {loading ? "Adding..." : "Add Driver"}
             </button>
           </div>
         </form>
@@ -94,4 +106,3 @@ export default function CreateDriverPage() {
     </div>
   )
 }
-

@@ -13,48 +13,80 @@ from .serializers import (
     DestinationSerializer, ServiceTypeSerializer, PricingRuleSerializer, 
     ShipmentSerializer, TourSerializer, InvoiceSerializer, IncidentSerializer
 )
+from .permissions import IsAdminOrReadOnly, IsAdminOrAgentOrReadOnly, CanManageShipments
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+    permission_classes = [IsAuthenticated]
 
-    def get_permissions(self):
-        if self.action == 'create':
-            return [AllowAny()]
-        return [IsAuthenticated()]
-
-    @action(detail=False, methods=['get'], permission_classes=[IsAuthenticated])
+    @action(detail=False, methods=['get', 'patch'], permission_classes=[IsAuthenticated])
     def me(self, request):
-        serializer = self.get_serializer(request.user)
-        return Response(serializer.data)
+        if request.method == 'GET':
+            serializer = self.get_serializer(request.user)
+            return Response(serializer.data)
+        elif request.method == 'PATCH':
+            serializer = self.get_serializer(request.user, data=request.data, partial=True)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            return Response(serializer.data)
 
 class ClientViewSet(viewsets.ModelViewSet):
     queryset = Client.objects.all()
     serializer_class = ClientSerializer
+    permission_classes = [IsAuthenticated, IsAdminOrAgentOrReadOnly]
 
 class DriverViewSet(viewsets.ModelViewSet):
     queryset = Driver.objects.all()
     serializer_class = DriverSerializer
+    permission_classes = [IsAuthenticated, IsAdminOrAgentOrReadOnly]
+
+    def destroy(self, request, *args, **kwargs):
+        driver = self.get_object()
+        if driver.user:
+            return Response(
+                {"error": "Cannot delete driver with a user account. Delete the user account instead."},
+                status=400
+            )
+        return super().destroy(request, *args, **kwargs)
 
 class VehicleViewSet(viewsets.ModelViewSet):
     queryset = Vehicle.objects.all()
     serializer_class = VehicleSerializer
+    permission_classes = [IsAuthenticated, IsAdminOrAgentOrReadOnly]
 
 class DestinationViewSet(viewsets.ModelViewSet):
     queryset = Destination.objects.all()
     serializer_class = DestinationSerializer
+    permission_classes = [IsAuthenticated, IsAdminOrReadOnly]
 
 class ServiceTypeViewSet(viewsets.ModelViewSet):
     queryset = ServiceType.objects.all()
     serializer_class = ServiceTypeSerializer
+    permission_classes = [IsAuthenticated, IsAdminOrReadOnly]
 
 class PricingRuleViewSet(viewsets.ModelViewSet):
     queryset = PricingRule.objects.all()
     serializer_class = PricingRuleSerializer
+    permission_classes = [IsAuthenticated, IsAdminOrReadOnly]
 
 class ShipmentViewSet(viewsets.ModelViewSet):
-    queryset = Shipment.objects.all()
     serializer_class = ShipmentSerializer
+    filterset_fields = ['tracking_number', 'status', 'client']
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_authenticated and user.role == 'DRIVER':
+            # Drivers only see their assigned shipments
+            return Shipment.objects.filter(driver__user=user)
+        return Shipment.objects.all()
+
+    def get_permissions(self):
+        if self.action in ['list', 'retrieve']:
+            return [AllowAny()]
+        if self.action in ['partial_update', 'update']:
+            return [IsAuthenticated()]
+        return [IsAuthenticated(), CanManageShipments()]
 
     @action(detail=True, methods=['get'])
     def slip(self, request, pk=None):
@@ -99,6 +131,11 @@ class TourViewSet(viewsets.ModelViewSet):
 class InvoiceViewSet(viewsets.ModelViewSet):
     queryset = Invoice.objects.all()
     serializer_class = InvoiceSerializer
+
+    def get_permissions(self):
+        if self.action in ['list', 'retrieve']:
+            return [AllowAny()]
+        return [IsAuthenticated()]
 
     @action(detail=True, methods=['get'])
     def pdf(self, request, pk=None):

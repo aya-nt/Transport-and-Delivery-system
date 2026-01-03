@@ -2,19 +2,47 @@
 
 import type React from "react"
 import { Package, AlertCircle, User, Phone, MessageCircle, Truck, Satellite, PlusCircle } from "lucide-react"
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import BackButton from "@/components/layout/back-button"
+import { shipmentsApi } from "@/lib/api"
 
 export default function TrackingPage() {
-  const [trackingNumber, setTrackingNumber] = useState("NP19357724")
+  const searchParams = useSearchParams()
+  const [trackingNumber, setTrackingNumber] = useState("")
   const [activeTab, setActiveTab] = useState<"details" | "tracking">("details")
+  const [shipment, setShipment] = useState<any>(null)
+  const [loading, setLoading] = useState(false)
   const router = useRouter()
+
+  useEffect(() => {
+    const tracking = searchParams.get('tracking')
+    if (tracking) {
+      setTrackingNumber(tracking)
+      fetchShipment(tracking)
+    }
+  }, [searchParams])
+
+  async function fetchShipment(tracking: string) {
+    setLoading(true)
+    try {
+      const shipments = await shipmentsApi.getAll()
+      const found = shipments.find((s: any) => s.tracking_number === tracking)
+      setShipment(found || null)
+    } catch (error) {
+      console.error('Failed to fetch shipment:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
-    console.log("[v0] Searching for:", trackingNumber)
+    if (trackingNumber) {
+      fetchShipment(trackingNumber)
+    }
   }
 
   const handleTabSwitch = (tab: "details" | "tracking") => {
@@ -43,9 +71,9 @@ export default function TrackingPage() {
             Find
           </button>
         </form>
-        <p className="text-sm text-text-secondary mt-4">
-          Your Delivery Laptop from the store is arriving today. You just take the laptop from store.
-        </p>
+        {loading && <p className="text-sm text-text-secondary mt-4">Recherche en cours...</p>}
+        {!loading && shipment && <p className="text-sm text-success mt-4">Expédition trouvée: {shipment.tracking_number}</p>}
+        {!loading && trackingNumber && !shipment && <p className="text-sm text-error mt-4">Aucune expédition trouvée avec ce numéro</p>}
       </div>
 
       {/* Tracking Details */}
@@ -78,108 +106,96 @@ export default function TrackingPage() {
           {/* Conditionally Render Content Based on Active Tab */}
           {activeTab === "details" && (
             <div>
-              <h3 className="text-lg font-semibold mb-4">Order Information</h3>
+              <h3 className="text-lg font-semibold mb-4">Informations de la commande</h3>
+              {!shipment ? (
+                <p className="text-text-secondary">Entrez un numéro de suivi pour voir les détails</p>
+              ) : (
               <div className="space-y-4">
                 <div className="grid grid-cols-3 gap-4">
                   <div>
-                    <p className="text-sm text-text-secondary mb-1">Product</p>
-                    <p className="font-medium">Laptop</p>
+                    <p className="text-sm text-text-secondary mb-1">N° de suivi</p>
+                    <p className="font-medium">{shipment.tracking_number}</p>
                   </div>
                   <div>
-                    <p className="text-sm text-text-secondary mb-1">From</p>
-                    <p className="font-medium">Addie Roma</p>
+                    <p className="text-sm text-text-secondary mb-1">Client</p>
+                    <p className="font-medium">{shipment.client_name || 'N/A'}</p>
                   </div>
                   <div>
-                    <p className="text-sm text-text-secondary mb-1">To</p>
-                    <p className="font-medium">Shannon Abshire</p>
+                    <p className="text-sm text-text-secondary mb-1">Chauffeur</p>
+                    <p className="font-medium">{shipment.driver_name || 'N/A'}</p>
                   </div>
                 </div>
                 <div className="grid grid-cols-3 gap-4">
                   <div>
-                    <p className="text-sm text-text-secondary mb-1">Weight</p>
-                    <p className="font-medium">6 kg</p>
+                    <p className="text-sm text-text-secondary mb-1">Destination</p>
+                    <p className="font-medium">{shipment.destination_name || 'N/A'}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-text-secondary mb-1">Poids</p>
+                    <p className="font-medium">{shipment.weight} kg</p>
                   </div>
                   <div>
                     <p className="text-sm text-text-secondary mb-1">Volume</p>
-                    <p className="font-medium">0.5 m³</p>
+                    <p className="font-medium">{shipment.volume} m³</p>
                   </div>
                   <div>
-                    <p className="text-sm text-text-secondary mb-1">Price</p>
-                    <p className="font-medium">150$</p>
+                    <p className="text-sm text-text-secondary mb-1">Coût</p>
+                    <p className="font-medium">{shipment.calculated_cost} DA</p>
                   </div>
                 </div>
                 <div className="grid grid-cols-3 gap-4">
                   <div>
-                    <p className="text-sm text-text-secondary mb-1">Ordered Date</p>
-                    <p className="font-medium">13 May 2023</p>
+                    <p className="text-sm text-text-secondary mb-1">Date de création</p>
+                    <p className="font-medium">{new Date(shipment.date).toLocaleDateString('fr-FR')}</p>
                   </div>
-                  <div className="col-span-2">
-                    <p className="text-sm text-text-secondary mb-1">Description</p>
-                    <p className="font-medium">Laptop delivery package</p>
+                  <div>
+                    <p className="text-sm text-text-secondary mb-1">Statut</p>
+                    <span
+                      className={`px-3 py-1 text-xs font-medium rounded-full ${
+                        shipment.status === 'PENDING' ? 'bg-gray-100 text-gray-600' :
+                        shipment.status === 'IN_TRANSIT' ? 'bg-blue-100 text-primary' :
+                        shipment.status === 'SORTING_CENTER' ? 'bg-yellow-100 text-warning' :
+                        shipment.status === 'OUT_FOR_DELIVERY' ? 'bg-orange-100 text-orange-600' :
+                        shipment.status === 'DELIVERED' ? 'bg-green-100 text-success' :
+                        'bg-red-100 text-error'
+                      }`}
+                    >
+                      {shipment.status === 'PENDING' ? 'En attente' :
+                       shipment.status === 'IN_TRANSIT' ? 'En transit' :
+                       shipment.status === 'SORTING_CENTER' ? 'Centre de tri' :
+                       shipment.status === 'OUT_FOR_DELIVERY' ? 'En cours de livraison' :
+                       shipment.status === 'DELIVERED' ? 'Livré' : 'Échec de livraison'}
+                    </span>
                   </div>
-                </div>
-                <div className="mt-6 flex items-center gap-4 pt-4 border-t border-border">
-                  <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-                      <User className="w-6 h-6 text-primary" />
-                    </div>
-                    <div>
-                      <p className="font-medium">Contact for detail</p>
-                      <p className="text-sm text-text-secondary">Allie Gothic</p>
-                    </div>
-                  </div>
-                  <div className="flex gap-2 ml-auto">
-                    <button className="p-2 rounded-lg border border-border hover:bg-gray-50 hover:scale-110 transition-all">
-                      <Phone className="w-5 h-5 text-gray-600" />
-                    </button>
-                    <button className="p-2 rounded-lg border border-border hover:bg-gray-50 hover:scale-110 transition-all">
-                      <MessageCircle className="w-5 h-5 text-gray-600" />
-                    </button>
+                  <div>
+                    <p className="text-sm text-text-secondary mb-1">Type de service</p>
+                    <p className="font-medium">{shipment.service_type_name || 'N/A'}</p>
                   </div>
                 </div>
               </div>
+              )}
             </div>
           )}
 
           {activeTab === "tracking" && (
             <div>
-              <h3 className="text-lg font-semibold mb-4">Shipment Details</h3>
+              <h3 className="text-lg font-semibold mb-4">Suivi de l'expédition</h3>
+              {!shipment ? (
+                <p className="text-text-secondary">Entrez un numéro de suivi pour voir le suivi</p>
+              ) : (
               <div className="space-y-6">
-                {/* Timeline */}
-                <div className="space-y-4">
-                  <div className="flex items-start gap-4">
-                    <div className="flex flex-col items-center">
-                      <div className="w-3 h-3 rounded-full bg-primary ring-4 ring-primary/20" />
-                      <div className="w-0.5 h-20 bg-primary" />
-                    </div>
-                    <div>
-                      <p className="font-medium text-text-secondary text-sm mb-1">Departure Date</p>
-                      <p className="text-lg font-semibold">14 May 2023, 3:35 PM</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-4">
-                    <div className="flex flex-col items-center">
-                      <div className="w-3 h-3 rounded-full bg-gray-300" />
-                    </div>
-                    <div>
-                      <p className="font-medium text-text-secondary text-sm mb-1">Arrival Date</p>
-                      <p className="text-lg font-semibold">16 May 2023, 3:35 PM</p>
-                    </div>
-                  </div>
-                </div>
-
                 {/* Progress Bar */}
-                <div className="pt-6 border-t border-border">
+                <div className="pt-6">
                   <div className="relative">
                     <div className="flex justify-between items-start">
                       {[
-                        { label: "Destination", active: true },
-                        { label: "Picked-up Order", active: true },
-                        { label: "Arrived at Pickup", active: false },
-                        { label: "Route for Pickup", active: false },
-                        { label: "Carrier Accepted Order", active: false },
+                        { status: 'PENDING', label: 'En attente', active: ['PENDING', 'IN_TRANSIT', 'SORTING_CENTER', 'OUT_FOR_DELIVERY', 'DELIVERED'].includes(shipment.status) },
+                        { status: 'IN_TRANSIT', label: 'En transit', active: ['IN_TRANSIT', 'SORTING_CENTER', 'OUT_FOR_DELIVERY', 'DELIVERED'].includes(shipment.status) },
+                        { status: 'SORTING_CENTER', label: 'Centre de tri', active: ['SORTING_CENTER', 'OUT_FOR_DELIVERY', 'DELIVERED'].includes(shipment.status) },
+                        { status: 'OUT_FOR_DELIVERY', label: 'En livraison', active: ['OUT_FOR_DELIVERY', 'DELIVERED'].includes(shipment.status) },
+                        { status: 'DELIVERED', label: 'Livré', active: shipment.status === 'DELIVERED' },
                       ].map((stage, index) => (
-                        <div key={stage.label} className="flex flex-col items-center flex-1 relative">
+                        <div key={stage.status} className="flex flex-col items-center flex-1 relative">
                           <div
                             className={`w-4 h-4 rounded-full z-10 ${
                               stage.active ? "bg-primary ring-4 ring-primary/20" : "bg-gray-300"
@@ -199,81 +215,88 @@ export default function TrackingPage() {
                   </div>
                 </div>
 
-                {/* Map Placeholder */}
-                <div className="bg-gray-100 rounded-lg h-80 flex items-center justify-center border border-border hover:border-primary transition-colors">
-                  <p className="text-text-secondary">Interactive map view will be displayed here</p>
+                {/* Current Status */}
+                <div className="bg-gray-50 rounded-lg p-4 border border-border">
+                  <p className="text-sm text-text-secondary mb-2">Statut actuel</p>
+                  <p className="text-lg font-semibold">
+                    {shipment.status === 'PENDING' ? 'Expédition en attente de traitement' :
+                     shipment.status === 'IN_TRANSIT' ? 'Expédition en transit vers la destination' :
+                     shipment.status === 'SORTING_CENTER' ? 'Expédition au centre de tri' :
+                     shipment.status === 'OUT_FOR_DELIVERY' ? 'Expédition en cours de livraison' :
+                     shipment.status === 'DELIVERED' ? 'Expédition livrée avec succès' :
+                     'Échec de livraison'}
+                  </p>
+                  <p className="text-sm text-text-secondary mt-1">
+                    Dernière mise à jour: {new Date(shipment.date).toLocaleString('fr-FR')}
+                  </p>
                 </div>
               </div>
+              )}
             </div>
           )}
         </div>
 
         {/* Notifications Sidebar */}
         <div className="bg-surface rounded-xl border border-border shadow-sm p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold">Notifications</h3>
-            <Link href="/notifications" className="text-primary text-sm hover:underline hover:scale-105 transition-all">
-              See all
-            </Link>
-          </div>
-          <div className="space-y-4">
-            {[
-              {
-                title: "Package Arrived",
-                desc: "Parcel (ID 1234 8765) has been delivered",
-                time: "10 minutes ago",
-                action: "Reorder",
-                icon: Package,
-                parcelId: "1234-8765",
-              },
-              {
-                title: "Package Received At Post",
-                desc: "Parcel (ID 6457 2244) has been received",
-                time: "1 Hour ago",
-                action: "Reorder",
-                icon: Package,
-                parcelId: "6457-2244",
-              },
-              {
-                title: "Order Cancelled",
-                desc: "Parcel (ID 6411 1122) has been cancelled",
-                time: "2 Hours ago",
-                action: "Cancelled",
-                icon: AlertCircle,
-                parcelId: "6411-1122",
-              },
-            ].map((notification, index) => (
-              <div
-                key={index}
-                onClick={() => router.push(`/shipments/journal`)}
-                className="border-b border-border pb-4 last:border-0 hover:bg-gray-50 p-2 rounded-lg transition-colors cursor-pointer"
-              >
-                <div className="flex items-start gap-3">
-                  <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <notification.icon className="w-5 h-5 text-gray-600" />
+          <h3 className="text-lg font-semibold mb-4">Historique de suivi</h3>
+          {!shipment ? (
+            <p className="text-sm text-text-secondary">Entrez un numéro de suivi pour voir l'historique</p>
+          ) : (
+            <div className="space-y-4">
+              {shipment.status_history && shipment.status_history.length > 0 ? (
+                shipment.status_history.map((history: any, index: number) => (
+                  <div key={history.id} className="border-b border-border pb-4">
+                    <div className="flex items-start gap-3">
+                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                        history.status === 'DELIVERED' ? 'bg-green-100' :
+                        history.status === 'DELIVERY_FAILED' ? 'bg-red-100' : 'bg-blue-100'
+                      }`}>
+                        <Package className={`w-5 h-5 ${
+                          history.status === 'DELIVERED' ? 'text-success' :
+                          history.status === 'DELIVERY_FAILED' ? 'text-error' : 'text-primary'
+                        }`} />
+                      </div>
+                      <div className="flex-1">
+                        <h4 className="font-medium text-sm mb-1">
+                          {history.status === 'PENDING' ? 'En attente' :
+                           history.status === 'IN_TRANSIT' ? 'En transit' :
+                           history.status === 'SORTING_CENTER' ? 'Centre de tri' :
+                           history.status === 'OUT_FOR_DELIVERY' ? 'En cours de livraison' :
+                           history.status === 'DELIVERED' ? 'Livré' : 'Échec de livraison'}
+                        </h4>
+                        <p className="text-xs text-text-muted">{new Date(history.timestamp).toLocaleString('fr-FR')}</p>
+                      </div>
+                    </div>
                   </div>
-                  <div className="flex-1">
-                    <h4 className="font-medium text-sm mb-1">{notification.title}</h4>
-                    <p className="text-xs text-text-secondary mb-1">{notification.desc}</p>
-                    <p className="text-xs text-text-muted mb-2">{notification.time}</p>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        if (notification.action === "Reorder") {
-                          router.push("/shipments/create")
-                        }
-                      }}
-                      className={`text-xs font-medium hover:underline hover:scale-105 transition-transform ${
-                        notification.action === "Cancelled" ? "text-error" : "text-warning"
-                      }`}
-                    >
-                      {notification.action}
-                    </button>
+                ))
+              ) : (
+                <div className="border-b border-border pb-4">
+                  <div className="flex items-start gap-3">
+                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                      shipment.status === 'DELIVERED' ? 'bg-green-100' :
+                      shipment.status === 'DELIVERY_FAILED' ? 'bg-red-100' : 'bg-blue-100'
+                    }`}>
+                      <Package className={`w-5 h-5 ${
+                        shipment.status === 'DELIVERED' ? 'text-success' :
+                        shipment.status === 'DELIVERY_FAILED' ? 'text-error' : 'text-primary'
+                      }`} />
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="font-medium text-sm mb-1">Statut actuel</h4>
+                      <p className="text-xs text-text-secondary mb-1">
+                        {shipment.status === 'PENDING' ? 'En attente' :
+                         shipment.status === 'IN_TRANSIT' ? 'En transit' :
+                         shipment.status === 'SORTING_CENTER' ? 'Centre de tri' :
+                         shipment.status === 'OUT_FOR_DELIVERY' ? 'En cours de livraison' :
+                         shipment.status === 'DELIVERED' ? 'Livré' : 'Échec de livraison'}
+                      </p>
+                      <p className="text-xs text-text-muted">{new Date(shipment.date).toLocaleDateString('fr-FR')}</p>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </div>
