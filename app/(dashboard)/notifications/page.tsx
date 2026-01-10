@@ -74,39 +74,39 @@ export default function NotificationsPage() {
       <BackButton />
 
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-text-primary mb-2">Notifications</h1>
-        <p className="text-text-secondary">Toutes vos notifications récentes</p>
+        <h1 className="text-3xl font-bold text-foreground mb-2">Notifications</h1>
+        <p className="text-muted-foreground">Toutes vos notifications récentes</p>
       </div>
 
       {loading ? (
         <div className="text-center py-8">Chargement...</div>
       ) : notifications.length === 0 ? (
-        <div className="text-center py-8 text-text-secondary">Aucune notification</div>
+        <div className="text-center py-8 text-muted-foreground">Aucune notification</div>
       ) : (
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
-        <div className="divide-y divide-gray-100">
+      <div className="bg-card rounded-2xl shadow-sm border border-border overflow-hidden">
+        <div className="divide-y divide-border">
           {notifications.map((notif, index) => (
             <div 
               key={index}
               onClick={() => router.push(notif.link)}
-              className="p-6 hover:bg-gray-50 transition-colors cursor-pointer"
+              className="p-6 hover:bg-accent/50 transition-colors cursor-pointer"
             >
               <div className="flex items-start gap-4">
                 <div className={`w-14 h-14 rounded-xl flex items-center justify-center flex-shrink-0 ${
-                  notif.color === 'red' ? 'bg-red-100' :
-                  notif.color === 'yellow' ? 'bg-yellow-100' : 'bg-gray-100'
+                  notif.color === 'red' ? 'bg-red-100 dark:bg-red-900/30' :
+                  notif.color === 'yellow' ? 'bg-yellow-100 dark:bg-yellow-900/30' : 'bg-muted'
                 }`}>
                   <notif.icon className={`w-8 h-8 ${
-                    notif.color === 'red' ? 'text-error' :
-                    notif.color === 'yellow' ? 'text-warning' : 'text-gray-600'
+                    notif.color === 'red' ? 'text-error dark:text-red-300' :
+                    notif.color === 'yellow' ? 'text-warning dark:text-yellow-300' : 'text-muted-foreground'
                   }`} />
                 </div>
                 <div className="flex-1">
                   <div className="flex items-start justify-between mb-2">
-                    <h3 className="font-bold text-text-primary text-lg">{notif.title}</h3>
-                    <span className="text-xs text-text-secondary">{notif.time}</span>
+                    <h3 className="font-bold text-foreground text-lg">{notif.title}</h3>
+                    <span className="text-xs text-muted-foreground">{notif.time}</span>
                   </div>
-                  <p className="text-text-secondary">{notif.desc}</p>
+                  <p className="text-muted-foreground">{notif.desc}</p>
                 </div>
               </div>
             </div>

@@ -41,7 +41,7 @@ export default function IncidentsPage() {
       <BackButton />
 
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold text-text-primary">Incidents</h1>
+        <h1 className="text-3xl font-bold text-foreground">Incidents</h1>
         <button
           onClick={() => router.push("/incidents/report")}
           className="px-6 py-3 bg-primary text-white rounded-lg font-semibold hover:bg-primary-dark hover:shadow-lg hover:scale-105 active:scale-95 transition-all duration-200"
@@ -53,31 +53,31 @@ export default function IncidentsPage() {
       {loading ? (
         <div className="text-center py-8">Loading incidents...</div>
       ) : incidents.length === 0 ? (
-        <div className="text-center py-8 text-text-secondary">No incidents found</div>
+        <div className="text-center py-8 text-muted-foreground">No incidents found</div>
       ) : (
-      <div className="bg-surface rounded-xl border border-border shadow-sm overflow-hidden">
+      <div className="bg-card rounded-xl border border-border shadow-sm overflow-hidden">
         <table className="w-full">
-          <thead className="bg-gray-50 border-b border-border">
+          <thead className="bg-muted/50 border-b border-border">
             <tr>
-              <th className="px-6 py-4 text-left text-sm font-semibold text-text-primary">Incident ID</th>
-              <th className="px-6 py-4 text-left text-sm font-semibold text-text-primary">Type</th>
-              <th className="px-6 py-4 text-left text-sm font-semibold text-text-primary">Shipment ID</th>
-              <th className="px-6 py-4 text-left text-sm font-semibold text-text-primary">Reported Date</th>
-              <th className="px-6 py-4 text-left text-sm font-semibold text-text-primary">Status</th>
-              <th className="px-6 py-4 text-left text-sm font-semibold text-text-primary">Actions</th>
+              <th className="px-6 py-4 text-left text-sm font-semibold text-foreground">Incident ID</th>
+              <th className="px-6 py-4 text-left text-sm font-semibold text-foreground">Type</th>
+              <th className="px-6 py-4 text-left text-sm font-semibold text-foreground">Shipment ID</th>
+              <th className="px-6 py-4 text-left text-sm font-semibold text-foreground">Reported Date</th>
+              <th className="px-6 py-4 text-left text-sm font-semibold text-foreground">Status</th>
+              <th className="px-6 py-4 text-left text-sm font-semibold text-foreground">Actions</th>
             </tr>
           </thead>
           <tbody>
             {incidents.map((incident: any) => (
-              <tr key={incident.id} className="border-b border-border hover:bg-gray-50 transition-colors">
-                <td className="px-6 py-4 text-sm text-text-primary font-medium">{incident.id}</td>
-                <td className="px-6 py-4 text-sm text-text-secondary">{incident.description}</td>
-                <td className="px-6 py-4 text-sm text-text-secondary">{incident.shipment}</td>
-                <td className="px-6 py-4 text-sm text-text-secondary">{new Date(incident.date).toLocaleDateString('fr-FR')}</td>
+              <tr key={incident.id} className="border-b border-border hover:bg-accent/50 transition-colors">
+                <td className="px-6 py-4 text-sm text-foreground font-medium">{incident.id}</td>
+                <td className="px-6 py-4 text-sm text-muted-foreground">{incident.description}</td>
+                <td className="px-6 py-4 text-sm text-muted-foreground">{incident.shipment}</td>
+                <td className="px-6 py-4 text-sm text-muted-foreground">{new Date(incident.date).toLocaleDateString('fr-FR')}</td>
                 <td className="px-6 py-4">
                   <span
                     className={`px-3 py-1 text-xs font-medium rounded-full ${
-                      incident.status === "RESOLVED" ? "bg-green-100 text-success" : "bg-red-100 text-error"
+                      incident.status === "RESOLVED" ? "bg-green-100 text-success dark:bg-green-900/30 dark:text-green-300" : "bg-red-100 text-error dark:bg-red-900/30 dark:text-red-300"
                     }`}
                   >
                     {incident.status === "RESOLVED" ? "Résolu" : "Ouvert"}

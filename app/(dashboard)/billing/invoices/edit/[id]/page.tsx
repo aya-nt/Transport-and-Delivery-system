@@ -63,30 +63,30 @@ export default function EditInvoicePage() {
     <div className="space-y-6">
       <BackButton />
 
-      <h1 className="text-3xl font-bold text-text-primary">Modifier Paiement - Facture #{invoice.id}</h1>
+      <h1 className="text-3xl font-bold text-foreground">Modifier Paiement - Facture #{invoice.id}</h1>
 
-      <div className="bg-surface rounded-xl border border-border shadow-sm p-6">
+      <div className="bg-card rounded-xl border border-border shadow-card p-6">
         <div className="mb-6 pb-6 border-b border-border">
-          <h2 className="text-lg font-semibold mb-4">Détails de la facture</h2>
+          <h2 className="text-lg font-semibold mb-4 text-foreground">Détails de la facture</h2>
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div>
-              <span className="text-text-secondary">Client:</span>
-              <span className="ml-2 font-medium">{invoice.client_name}</span>
+              <span className="text-muted-foreground">Client:</span>
+              <span className="ml-2 font-medium text-foreground">{invoice.client_name}</span>
             </div>
             <div>
-              <span className="text-text-secondary">Date:</span>
-              <span className="ml-2 font-medium">{new Date(invoice.date).toLocaleDateString('fr-FR')}</span>
+              <span className="text-muted-foreground">Date:</span>
+              <span className="ml-2 font-medium text-foreground">{new Date(invoice.date).toLocaleDateString('fr-FR')}</span>
             </div>
             <div>
-              <span className="text-text-secondary">Montant TTC:</span>
-              <span className="ml-2 font-medium">{invoice.amount_ttc} DA</span>
+              <span className="text-muted-foreground">Montant TTC:</span>
+              <span className="ml-2 font-medium text-foreground">{invoice.amount_ttc} DA</span>
             </div>
             <div>
-              <span className="text-text-secondary">Statut actuel:</span>
+              <span className="text-muted-foreground">Statut actuel:</span>
               <span className={`ml-2 px-2 py-1 text-xs font-medium rounded-full ${
-                invoice.status === 'PAID' ? 'bg-green-100 text-success' :
-                invoice.status === 'PARTIAL' ? 'bg-yellow-100 text-warning' :
-                'bg-red-100 text-error'
+                invoice.status === 'PAID' ? 'bg-success/20 text-success dark:bg-success/10' :
+                invoice.status === 'PARTIAL' ? 'bg-warning/20 text-warning dark:bg-warning/10' :
+                'bg-destructive/20 text-destructive dark:bg-destructive/10'
               }`}>
                 {invoice.status === 'PAID' ? 'Payé' :
                  invoice.status === 'PARTIAL' ? 'Partiel' : 'Non payé'}
@@ -97,7 +97,7 @@ export default function EditInvoicePage() {
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label className="block text-sm font-medium text-text-primary mb-2">
+            <label className="block text-sm font-medium text-foreground mb-2">
               Montant Payé (DA)
             </label>
             <input
@@ -127,7 +127,7 @@ export default function EditInvoicePage() {
             <button
               type="button"
               onClick={() => router.push('/billing/invoices')}
-              className="px-6 py-3 bg-gray-200 text-text-primary rounded-lg font-semibold hover:bg-gray-300 transition-all duration-200"
+              className="px-6 py-3 bg-muted text-foreground rounded-lg font-semibold hover:bg-muted/80 transition-all duration-200"
             >
               Annuler
             </button>

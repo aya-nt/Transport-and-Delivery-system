@@ -42,11 +42,15 @@ export default function EditVehiclePage() {
     setSaving(true)
     
     try {
-      await vehiclesApi.update(Number(params.id), formData)
+      const response = await vehiclesApi.update(Number(params.id), {
+        ...formData,
+        capacity: parseFloat(formData.capacity)
+      })
       router.push("/vehicles")
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to update vehicle:', error)
-      alert('Failed to update vehicle. Please try again.')
+      const errorMsg = error.response?.data ? JSON.stringify(error.response.data) : 'Failed to update vehicle. Please try again.'
+      alert(errorMsg)
     } finally {
       setSaving(false)
     }
@@ -64,22 +68,24 @@ export default function EditVehiclePage() {
     <div className="space-y-6">
       <BackButton />
 
-      <h1 className="text-3xl font-bold text-text-primary">Modifier Véhicule</h1>
+      <h1 className="text-3xl font-bold text-foreground">Modifier Véhicule</h1>
 
-      <div className="bg-surface rounded-xl border border-border shadow-sm p-6">
+      <div className="bg-card rounded-xl border border-border shadow-sm p-6">
         <form className="space-y-6" onSubmit={handleSubmit}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label className="block text-sm font-medium mb-2">Matricule</label>
+              <label className="block text-sm font-medium mb-2">License Plate</label>
               <input
                 type="text"
                 name="license_plate"
                 value={formData.license_plate}
                 onChange={handleChange}
                 required
+                pattern="\d{6}-\d{2}"
                 className="w-full px-4 py-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
                 placeholder="123456-16"
               />
+              <p className="text-xs text-muted-foreground mt-1">Format: 6 digits - 2 digits (ex: 123456-16)</p>
             </div>
             <div>
               <label className="block text-sm font-medium mb-2">Type de Véhicule</label>
@@ -131,7 +137,7 @@ export default function EditVehiclePage() {
             <button
               type="button"
               onClick={() => router.push("/vehicles")}
-              className="px-6 py-3 border border-border rounded-lg font-semibold hover:bg-gray-50 transition-all duration-200 hover:scale-105 active:scale-95 hover:shadow-sm"
+              className="px-6 py-3 border border-border rounded-lg font-semibold text-foreground bg-card hover:bg-accent transition-all duration-200 hover:scale-105 active:scale-95 hover:shadow-sm"
             >
               Annuler
             </button>

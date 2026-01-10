@@ -1,68 +1,102 @@
 "use client"
 
-import type React from "react"
-
 import { useState } from "react"
+import { useRouter } from "next/navigation"
+import BackButton from "@/components/layout/back-button"
 
 export default function ChangePasswordPage() {
+  const router = useRouter()
   const [formData, setFormData] = useState({
-    currentPassword: "",
-    newPassword: "",
-    confirmPassword: "",
+    old_password: "",
+    new_password: "",
+    confirm_password: ""
   })
+  const [error, setError] = useState("")
+  const [success, setSuccess] = useState(false)
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    console.log("[v0] Password change requested")
+    setError("")
+
+    if (formData.new_password !== formData.confirm_password) {
+      setError("New passwords do not match")
+      return
+    }
+
+    try {
+      const token = localStorage.getItem("access_token")
+      const res = await fetch("http://localhost:8000/api/users/change_password/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          old_password: formData.old_password,
+          new_password: formData.new_password
+        }),
+      })
+
+      if (!res.ok) {
+        const data = await res.json()
+        throw new Error(data.error || "Failed to change password")
+      }
+
+      setSuccess(true)
+      setTimeout(() => router.push("/settings/profile"), 2000)
+    } catch (err: any) {
+      setError(err.message || "Failed to change password")
+    }
   }
 
   return (
-    <div className="space-y-6 max-w-2xl">
-      <h1 className="text-3xl font-bold text-text-primary">Change Password</h1>
+    <div className="space-y-6">
+      <BackButton />
+      <h1 className="text-3xl font-bold text-foreground">Change Password</h1>
 
-      <div className="bg-surface rounded-xl border border-border shadow-sm p-6">
-        <form onSubmit={handleSubmit} className="space-y-6">
+      <div className="max-w-md bg-card p-8 rounded-3xl shadow-card border border-border">
+        {error && <div className="bg-destructive/10 text-destructive p-3 rounded-2xl mb-4 border border-destructive/20">{error}</div>}
+        {success && <div className="bg-success/10 text-success p-3 rounded-2xl mb-4 border border-success/20">Password changed successfully! Redirecting...</div>}
+        
+        <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium mb-2">Current Password</label>
+            <label className="block text-sm font-medium mb-2 text-foreground">Current Password</label>
             <input
               type="password"
-              value={formData.currentPassword}
-              onChange={(e) => setFormData({ ...formData, currentPassword: e.target.value })}
-              className="w-full px-4 py-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary hover:border-primary transition-all"
-              placeholder="Enter current password"
+              value={formData.old_password}
+              onChange={(e) => setFormData({ ...formData, old_password: e.target.value })}
+              required
+              className="w-full px-4 py-3 border border-input rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary bg-background text-foreground"
             />
           </div>
-
           <div>
-            <label className="block text-sm font-medium mb-2">New Password</label>
+            <label className="block text-sm font-medium mb-2 text-foreground">New Password</label>
             <input
               type="password"
-              value={formData.newPassword}
-              onChange={(e) => setFormData({ ...formData, newPassword: e.target.value })}
-              className="w-full px-4 py-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary hover:border-primary transition-all"
-              placeholder="Enter new password"
+              value={formData.new_password}
+              onChange={(e) => setFormData({ ...formData, new_password: e.target.value })}
+              required
+              minLength={8}
+              className="w-full px-4 py-3 border border-input rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary bg-background text-foreground"
             />
           </div>
-
           <div>
-            <label className="block text-sm font-medium mb-2">Confirm New Password</label>
+            <label className="block text-sm font-medium mb-2 text-foreground">Confirm New Password</label>
             <input
               type="password"
-              value={formData.confirmPassword}
-              onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-              className="w-full px-4 py-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary hover:border-primary transition-all"
-              placeholder="Confirm new password"
+              value={formData.confirm_password}
+              onChange={(e) => setFormData({ ...formData, confirm_password: e.target.value })}
+              required
+              minLength={8}
+              className="w-full px-4 py-3 border border-input rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary bg-background text-foreground"
             />
           </div>
-
-          <div className="flex justify-end">
-            <button
-              type="submit"
-              className="px-6 py-3 bg-primary text-white rounded-lg font-semibold hover:bg-primary-dark hover:shadow-lg hover:scale-105 active:scale-95 transition-all duration-200"
-            >
-              Update Password
-            </button>
-          </div>
+          <button
+            type="submit"
+            className="w-full bg-gradient-to-r from-primary to-chart-2 text-white py-3 rounded-2xl font-semibold hover:scale-105 active:scale-95 transition-all shadow-lg hover:shadow-xl"
+          >
+            Change Password
+          </button>
         </form>
       </div>
     </div>

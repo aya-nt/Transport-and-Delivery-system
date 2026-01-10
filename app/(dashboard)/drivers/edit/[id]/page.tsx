@@ -70,9 +70,9 @@ export default function EditDriverPage() {
     <div className="space-y-6">
       <BackButton />
 
-      <h1 className="text-3xl font-bold text-text-primary">Edit Driver</h1>
+      <h1 className="text-3xl font-bold text-foreground">Edit Driver</h1>
 
-      <div className="bg-surface rounded-xl border border-border shadow-sm p-6">
+      <div className="bg-card rounded-xl border border-border shadow-sm p-6">
         <form className="space-y-6" onSubmit={handleSubmit}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
@@ -157,7 +157,7 @@ export default function EditDriverPage() {
             <button
               type="button"
               onClick={() => router.push("/drivers")}
-              className="px-6 py-3 border border-border rounded-lg font-semibold hover:bg-gray-50 transition-all"
+              className="px-6 py-3 border border-border rounded-lg font-semibold text-foreground bg-card hover:bg-accent transition-all"
             >
               Cancel
             </button>

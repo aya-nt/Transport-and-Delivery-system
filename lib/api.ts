@@ -173,3 +173,20 @@ export const userApi = {
     body: JSON.stringify(data),
   }),
 };
+
+// Tours API
+export const toursApi = {
+  getAll: () => apiFetch('/tours/'),
+  getById: (id: number) => apiFetch(`/tours/${id}/`),
+  create: (data: any) => apiFetch('/tours/', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  }),
+  update: (id: number, data: any) => apiFetch(`/tours/${id}/`, {
+    method: 'PUT',
+    body: JSON.stringify(data),
+  }),
+  delete: (id: number) => apiFetch(`/tours/${id}/`, {
+    method: 'DELETE',
+  }),
+};

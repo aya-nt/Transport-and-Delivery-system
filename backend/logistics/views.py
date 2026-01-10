@@ -5,6 +5,7 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.http import HttpResponse
 from django.db.models import Sum, Count
 from django.db.models.functions import TruncMonth
+from django.contrib.auth.hashers import check_password
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter
 from .models import User, Client, Driver, Vehicle, Destination, ServiceType, PricingRule, Shipment, Tour, Invoice, Incident
@@ -30,6 +31,61 @@ class UserViewSet(viewsets.ModelViewSet):
             serializer.is_valid(raise_exception=True)
             serializer.save()
             return Response(serializer.data)
+
+    @action(detail=False, methods=['post'], permission_classes=[IsAuthenticated])
+    def change_password(self, request):
+        user = request.user
+        old_password = request.data.get('old_password')
+        new_password = request.data.get('new_password')
+
+        if not old_password or not new_password:
+            return Response({'error': 'Both old and new passwords are required'}, status=400)
+
+        if not check_password(old_password, user.password):
+            return Response({'error': 'Current password is incorrect'}, status=400)
+
+        user.set_password(new_password)
+        user.save()
+        return Response({'message': 'Password changed successfully'})
+
+    @action(detail=False, methods=['post'], permission_classes=[AllowAny])
+    def request_reset(self, request):
+        username = request.data.get('username')
+        if not username:
+            return Response({'error': 'Username is required'}, status=400)
+
+        try:
+            user = User.objects.get(username=username)
+            token = user.generate_reset_token()
+            print(f"\n=== PASSWORD RESET TOKEN ===")
+            print(f"User: {username}")
+            print(f"Token: {token}")
+            print(f"Expires: {user.reset_token_expires}")
+            print(f"===========================\n")
+            return Response({'message': 'Reset token generated (check console)'})
+        except User.DoesNotExist:
+            return Response({'error': 'User not found'}, status=404)
+
+    @action(detail=False, methods=['post'], permission_classes=[AllowAny])
+    def reset_password(self, request):
+        token = request.data.get('token')
+        new_password = request.data.get('new_password')
+
+        if not token or not new_password:
+            return Response({'error': 'Token and new password are required'}, status=400)
+
+        try:
+            user = User.objects.get(reset_token=token)
+            if not user.reset_token_expires or timezone.now() > user.reset_token_expires:
+                return Response({'error': 'Token has expired'}, status=400)
+
+            user.set_password(new_password)
+            user.reset_token = None
+            user.reset_token_expires = None
+            user.save()
+            return Response({'message': 'Password reset successfully'})
+        except User.DoesNotExist:
+            return Response({'error': 'Invalid token'}, status=400)
 
 class ClientViewSet(viewsets.ModelViewSet):
     queryset = Client.objects.all()
@@ -137,7 +193,7 @@ class InvoiceViewSet(viewsets.ModelViewSet):
             return [AllowAny()]
         return [IsAuthenticated()]
 
-    @action(detail=True, methods=['get'])
+    @action(detail=True, methods=['get'], permission_classes=[AllowAny])
     def pdf(self, request, pk=None):
         invoice = self.get_object()
         response = HttpResponse(content_type='application/pdf')

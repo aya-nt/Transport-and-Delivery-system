@@ -64,9 +64,9 @@ export default function EditClientPage() {
     <div className="space-y-6">
       <BackButton />
 
-      <h1 className="text-3xl font-bold text-text-primary">Edit Client</h1>
+      <h1 className="text-3xl font-bold text-foreground">Edit Client</h1>
 
-      <div className="bg-surface rounded-xl border border-border shadow-sm p-6">
+      <div className="bg-card rounded-xl border border-border shadow-sm p-6">
         <form className="space-y-6" onSubmit={handleSubmit}>
           <div>
             <label className="block text-sm font-medium mb-2">Full Name</label>
@@ -123,7 +123,7 @@ export default function EditClientPage() {
             <button
               type="button"
               onClick={() => router.push("/clients")}
-              className="px-6 py-3 border border-border rounded-lg font-semibold hover:bg-gray-50 transition-all duration-200 hover:scale-105 active:scale-95 hover:shadow-sm"
+              className="px-6 py-3 border border-border rounded-lg font-semibold text-foreground bg-card hover:bg-accent transition-all duration-200 hover:scale-105 active:scale-95 hover:shadow-sm"
             >
               Cancel
             </button>

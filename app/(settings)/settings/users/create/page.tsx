@@ -32,8 +32,8 @@ export default function CreateUserPage() {
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="text-center">
           <div className="text-6xl mb-4">🔒</div>
-          <h2 className="text-2xl font-bold text-text-primary mb-2">Admin Only Section</h2>
-          <p className="text-text-secondary">You need administrator privileges to access this page.</p>
+          <h2 className="text-2xl font-bold text-foreground mb-2">Admin Only Section</h2>
+          <p className="text-muted-foreground">You need administrator privileges to access this page.</p>
         </div>
       </div>
     )
@@ -84,7 +84,7 @@ export default function CreateUserPage() {
       <BackButton />
       <h1 className="text-3xl font-bold">Create User Account</h1>
 
-      <div className="bg-surface rounded-xl border border-border shadow-sm p-6">
+      <div className="bg-card rounded-xl border border-border shadow-card p-6">
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
             <label className="block text-sm font-medium mb-2">Username *</label>
@@ -135,7 +135,7 @@ export default function CreateUserPage() {
             <button
               type="button"
               onClick={() => router.push('/settings/roles')}
-              className="px-6 py-3 border rounded-lg font-semibold hover:bg-gray-50"
+              className="px-6 py-3 border rounded-lg font-semibold hover:bg-accent transition-colors"
             >
               Cancel
             </button>

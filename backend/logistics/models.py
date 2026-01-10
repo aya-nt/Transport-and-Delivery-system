@@ -6,6 +6,9 @@ from django.dispatch import receiver
 from django.core.exceptions import ValidationError
 from decimal import Decimal
 import re
+import secrets
+from django.utils import timezone
+from datetime import timedelta
 
 # Validators
 def validate_algerian_phone(value):
@@ -31,6 +34,14 @@ class User(AbstractUser):
         DRIVER = 'DRIVER', _('Driver')
 
     role = models.CharField(max_length=10, choices=Role.choices, default=Role.AGENT)
+    reset_token = models.CharField(max_length=100, blank=True, null=True)
+    reset_token_expires = models.DateTimeField(blank=True, null=True)
+
+    def generate_reset_token(self):
+        self.reset_token = secrets.token_urlsafe(32)
+        self.reset_token_expires = timezone.now() + timedelta(hours=1)
+        self.save()
+        return self.reset_token
 
 class Client(models.Model):
     class Status(models.TextChoices):
@@ -138,14 +149,42 @@ class Shipment(models.Model):
     status = models.CharField(max_length=20, choices=Status.choices, default=Status.PENDING)
     updated_at = models.DateTimeField(auto_now=True)
     
+    # International shipment fields
+    is_international = models.BooleanField(default=False)
+    origin_country = models.CharField(max_length=100, blank=True, null=True, help_text="Country of origin (e.g., 'Algeria', 'France')")
+    destination_country = models.CharField(max_length=100, blank=True, null=True, help_text="Destination country")
+    customs_value = models.DecimalField(max_digits=12, decimal_places=2, blank=True, null=True, help_text="Declared value for customs")
+    customs_currency = models.CharField(max_length=3, default='DZD', blank=True, help_text="Currency code (e.g., DZD, USD, EUR)")
+    customs_declaration = models.TextField(blank=True, null=True, help_text="Customs declaration details")
+    hs_code = models.CharField(max_length=20, blank=True, null=True, help_text="Harmonized System (HS) code for customs")
+    requires_customs_clearance = models.BooleanField(default=False)
+    customs_cleared = models.BooleanField(default=False)
+    
     calculated_cost = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
 
     def calculate_cost(self):
         # Find pricing rule
         try:
             rule = PricingRule.objects.get(destination=self.destination, service_type=self.service_type)
-            cost = rule.base_tariff + (self.weight * rule.weight_rate) + (self.volume * rule.volume_rate)
-            return cost
+            base_cost = rule.base_tariff + (self.weight * rule.weight_rate) + (self.volume * rule.volume_rate)
+            
+            # Add international shipment surcharge
+            if self.is_international:
+                # International shipments typically cost 2-3x more due to customs, documentation, and handling
+                international_multiplier = Decimal('2.5')
+                base_cost = base_cost * international_multiplier
+                
+                # Add customs clearance fee if required
+                if self.requires_customs_clearance:
+                    customs_fee = Decimal('5000.00')  # Base customs clearance fee in DZD
+                    base_cost = base_cost + customs_fee
+                
+                # Add surcharge based on customs value (higher value = higher insurance/customs cost)
+                if self.customs_value and self.customs_value > Decimal('100000'):
+                    value_surcharge = (self.customs_value - Decimal('100000')) * Decimal('0.05')  # 5% of value above 100k
+                    base_cost = base_cost + value_surcharge
+            
+            return base_cost
         except PricingRule.DoesNotExist:
             return Decimal('0.00')
 
@@ -169,19 +208,22 @@ class ShipmentStatusHistory(models.Model):
         return f"{self.shipment.tracking_number} - {self.status} at {self.timestamp}"
 
 class Tour(models.Model):
+    class Status(models.TextChoices):
+        PLANNED = 'PLANNED', _('Planned')
+        IN_PROGRESS = 'IN_PROGRESS', _('In Progress')
+        COMPLETED = 'COMPLETED', _('Completed')
+
     driver = models.ForeignKey(Driver, on_delete=models.PROTECT)
     vehicle = models.ForeignKey(Vehicle, on_delete=models.PROTECT)
     date = models.DateField()
-    shipments = models.ManyToManyField(Shipment, related_name='tours')
+    shipments = models.ManyToManyField(Shipment, related_name='tours', blank=True)
+    distance_km = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    duration_hours = models.DecimalField(max_digits=5, decimal_places=1, null=True, blank=True)
+    fuel_consumption = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    incidents = models.TextField(blank=True, null=True)
+    status = models.CharField(max_length=20, choices=Status.choices, default=Status.PLANNED)
     
     def save(self, *args, **kwargs):
-        # Update status before saving
-        if self.paid_amount >= self.amount_ttc:
-            self.status = self.Status.PAID
-        elif self.paid_amount > 0:
-            self.status = self.Status.PARTIAL
-        else:
-            self.status = self.Status.UNPAID
         super().save(*args, **kwargs)
         # Update vehicle status when tour is created
         self.vehicle.update_status()
@@ -242,6 +284,36 @@ class Incident(models.Model):
 
     def __str__(self):
         return f"Incident on {self.shipment}"
+
+class Claim(models.Model):
+    class Status(models.TextChoices):
+        PENDING = 'PENDING', _('Pending')
+        IN_PROGRESS = 'IN_PROGRESS', _('In Progress')
+        RESOLVED = 'RESOLVED', _('Resolved')
+        CANCELLED = 'CANCELLED', _('Cancelled')
+
+    class ClaimType(models.TextChoices):
+        DAMAGED_PACKAGE = 'DAMAGED_PACKAGE', _('Damaged Package')
+        LOST_PACKAGE = 'LOST_PACKAGE', _('Lost Package')
+        LATE_DELIVERY = 'LATE_DELIVERY', _('Late Delivery')
+        WRONG_DELIVERY = 'WRONG_DELIVERY', _('Wrong Delivery')
+        BILLING_ISSUE = 'BILLING_ISSUE', _('Billing Issue')
+        SERVICE_QUALITY = 'SERVICE_QUALITY', _('Service Quality')
+        OTHER = 'OTHER', _('Other')
+
+    client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name='claims')
+    shipment = models.ForeignKey(Shipment, on_delete=models.SET_NULL, null=True, blank=True, related_name='claims')
+    invoice = models.ForeignKey(Invoice, on_delete=models.SET_NULL, null=True, blank=True, related_name='claims')
+    claim_type = models.CharField(max_length=20, choices=ClaimType.choices)
+    description = models.TextField()
+    assigned_to = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='assigned_claims')
+    status = models.CharField(max_length=20, choices=Status.choices, default=Status.PENDING)
+    date = models.DateTimeField(auto_now_add=True)
+    resolved_date = models.DateTimeField(null=True, blank=True)
+    resolution_notes = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        return f"Claim #{self.id} - {self.client.name}"
 
 @receiver(pre_save, sender=Invoice)
 def update_invoice_status(sender, instance, **kwargs):

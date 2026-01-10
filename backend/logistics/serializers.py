@@ -95,6 +95,9 @@ class ShipmentSerializer(serializers.ModelSerializer):
         return instance
 
 class TourSerializer(serializers.ModelSerializer):
+    driver_name = serializers.CharField(source='driver.name', read_only=True)
+    vehicle_plate = serializers.CharField(source='vehicle.license_plate', read_only=True)
+    
     class Meta:
         model = Tour
         fields = '__all__'

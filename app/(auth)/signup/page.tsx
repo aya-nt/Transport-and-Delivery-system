@@ -23,7 +23,7 @@ export default function SignupPage() {
   }
 
   return (
-    <div className="bg-surface rounded-xl shadow-2xl p-8">
+    <div className="bg-card rounded-xl shadow-card border border-border p-8">
       <div className="text-center mb-8">
         <div className="flex justify-center mb-4">
           <div className="w-16 h-16 bg-primary rounded-xl flex items-center justify-center shadow-lg">
@@ -38,8 +38,8 @@ export default function SignupPage() {
             </svg>
           </div>
         </div>
-        <h1 className="text-3xl font-bold text-primary mb-2">Join SwiftDeliver</h1>
-        <p className="text-text-secondary">Create your account to get started</p>
+        <h1 className="text-3xl font-bold text-foreground mb-2">Join SwiftDeliver</h1>
+        <p className="text-muted-foreground">Create your account to get started</p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
@@ -52,7 +52,7 @@ export default function SignupPage() {
             id="name"
             value={formData.name}
             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-            className="w-full px-4 py-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary hover:border-primary transition-all"
+            className="w-full px-4 py-3 border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-primary hover:border-primary transition-all bg-background text-foreground"
             placeholder="John Doe"
             required
           />
@@ -67,7 +67,7 @@ export default function SignupPage() {
             id="email"
             value={formData.email}
             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-            className="w-full px-4 py-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary hover:border-primary transition-all"
+            className="w-full px-4 py-3 border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-primary hover:border-primary transition-all bg-background text-foreground"
             placeholder="you@example.com"
             required
           />
@@ -82,7 +82,7 @@ export default function SignupPage() {
             id="password"
             value={formData.password}
             onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-            className="w-full px-4 py-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary hover:border-primary transition-all"
+            className="w-full px-4 py-3 border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-primary hover:border-primary transition-all bg-background text-foreground"
             placeholder="Create a strong password"
             required
           />
@@ -97,7 +97,7 @@ export default function SignupPage() {
             id="confirmPassword"
             value={formData.confirmPassword}
             onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-            className="w-full px-4 py-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary hover:border-primary transition-all"
+            className="w-full px-4 py-3 border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-primary hover:border-primary transition-all bg-background text-foreground"
             placeholder="Re-enter your password"
             required
           />
@@ -105,12 +105,12 @@ export default function SignupPage() {
 
         <button
           type="submit"
-          className="w-full bg-primary text-white py-3 rounded-lg font-semibold hover:bg-primary-dark hover:shadow-lg hover:scale-105 active:scale-95 transition-all duration-200"
+          className="w-full bg-gradient-to-r from-primary to-chart-2 text-white py-3 rounded-lg font-semibold hover:opacity-90 hover:shadow-lg hover:scale-105 active:scale-95 transition-all duration-200"
         >
           Create Account
         </button>
 
-        <p className="text-center text-sm text-text-secondary">
+        <p className="text-center text-sm text-muted-foreground">
           Already have an account?{" "}
           <Link href="/login" className="text-primary font-semibold hover:underline transition-all">
             Sign in

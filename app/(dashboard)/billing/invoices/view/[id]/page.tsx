@@ -40,32 +40,32 @@ export default function ViewInvoicePage() {
       <BackButton />
 
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold text-text-primary">Facture #{invoice.id}</h1>
+        <h1 className="text-3xl font-bold text-foreground">Facture #{invoice.id}</h1>
         <button
           onClick={handleDownload}
-          className="px-6 py-3 bg-primary text-white rounded-lg font-semibold hover:bg-primary-dark hover:shadow-lg hover:scale-105 active:scale-95 transition-all duration-200"
+          className="px-6 py-3 bg-primary text-primary-foreground rounded-lg font-semibold hover:opacity-90 hover:shadow-lg hover:scale-105 active:scale-95 transition-all duration-200"
         >
           Télécharger PDF
         </button>
       </div>
 
-      <div className="bg-surface rounded-xl border border-border shadow-sm p-8">
+      <div className="bg-card rounded-xl border border-border shadow-card p-8">
         <div className="mb-8">
-          <h2 className="text-2xl font-bold mb-2">FACTURE</h2>
-          <p className="text-text-secondary">Date: {new Date(invoice.date).toLocaleDateString('fr-FR')}</p>
+          <h2 className="text-2xl font-bold mb-2 text-foreground">FACTURE</h2>
+          <p className="text-muted-foreground">Date: {new Date(invoice.date).toLocaleDateString('fr-FR')}</p>
         </div>
 
         <div className="grid grid-cols-2 gap-8 mb-8">
           <div>
-            <h3 className="font-semibold mb-2">Client</h3>
-            <p className="text-text-secondary">{invoice.client_name}</p>
+            <h3 className="font-semibold mb-2 text-foreground">Client</h3>
+            <p className="text-muted-foreground">{invoice.client_name}</p>
           </div>
           <div>
-            <h3 className="font-semibold mb-2">Statut</h3>
+            <h3 className="font-semibold mb-2 text-foreground">Statut</h3>
             <span className={`px-3 py-1 text-xs font-medium rounded-full ${
-              invoice.status === 'PAID' ? 'bg-green-100 text-success' :
-              invoice.status === 'PARTIAL' ? 'bg-yellow-100 text-warning' :
-              'bg-red-100 text-error'
+              invoice.status === 'PAID' ? 'bg-success/20 text-success dark:bg-success/10' :
+              invoice.status === 'PARTIAL' ? 'bg-warning/20 text-warning dark:bg-warning/10' :
+              'bg-destructive/20 text-destructive dark:bg-destructive/10'
             }`}>
               {invoice.status === 'PAID' ? 'Payé' :
                invoice.status === 'PARTIAL' ? 'Partiel' : 'Non payé'}
@@ -74,28 +74,28 @@ export default function ViewInvoicePage() {
         </div>
 
         <div className="border-t border-border pt-6 mb-6">
-          <h3 className="font-semibold mb-4">Détails</h3>
+          <h3 className="font-semibold mb-4 text-foreground">Détails</h3>
           <div className="space-y-3">
             <div className="flex justify-between">
-              <span className="text-text-secondary">Montant HT:</span>
-              <span className="font-medium">{invoice.amount_ht} DA</span>
+              <span className="text-muted-foreground">Montant HT:</span>
+              <span className="font-medium text-foreground">{invoice.amount_ht} DA</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-text-secondary">TVA (19%):</span>
-              <span className="font-medium">{invoice.tva} DA</span>
+              <span className="text-muted-foreground">TVA (19%):</span>
+              <span className="font-medium text-foreground">{invoice.tva} DA</span>
             </div>
             <div className="flex justify-between text-lg font-bold border-t border-border pt-3">
-              <span>Montant TTC:</span>
-              <span>{invoice.amount_ttc} DA</span>
+              <span className="text-foreground">Montant TTC:</span>
+              <span className="text-foreground">{invoice.amount_ttc} DA</span>
             </div>
           </div>
         </div>
 
         <div className="border-t border-border pt-6">
-          <h3 className="font-semibold mb-4">Paiement</h3>
+          <h3 className="font-semibold mb-4 text-foreground">Paiement</h3>
           <div className="space-y-3">
             <div className="flex justify-between">
-              <span className="text-text-secondary">Montant payé:</span>
+              <span className="text-muted-foreground">Montant payé:</span>
               <span className="font-medium">{invoice.paid_amount} DA</span>
             </div>
             <div className="flex justify-between text-lg font-bold">

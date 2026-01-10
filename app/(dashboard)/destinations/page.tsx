@@ -27,34 +27,34 @@ export default function DestinationsPage() {
       <BackButton />
 
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold text-text-primary">Destinations</h1>
-        <button className="px-6 py-3 bg-primary text-white rounded-lg font-semibold hover:bg-primary-dark transition-colors">
+        <h1 className="text-3xl font-bold text-foreground">Destinations</h1>
+        <button className="px-6 py-3 bg-primary text-primary-foreground rounded-lg font-semibold hover:opacity-90 transition-colors shadow-lg hover:shadow-xl">
           Add Destination
         </button>
       </div>
 
       {loading ? (
-        <div className="text-center py-8">Loading destinations...</div>
+        <div className="text-center py-8 text-muted-foreground">Loading destinations...</div>
       ) : destinations.length === 0 ? (
-        <div className="bg-surface rounded-xl border border-border shadow-sm p-6">
-          <p className="text-text-secondary">No destinations found</p>
+        <div className="bg-card rounded-xl border border-border shadow-card p-6">
+          <p className="text-muted-foreground">No destinations found</p>
         </div>
       ) : (
-        <div className="bg-surface rounded-xl border border-border shadow-sm overflow-hidden">
+        <div className="bg-card rounded-xl border border-border shadow-card overflow-hidden">
           <table className="w-full">
-            <thead className="bg-gray-50 border-b border-border">
+            <thead className="bg-muted/50 border-b border-border">
               <tr>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-text-primary">Name</th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-text-primary">Address</th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-text-primary">City</th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-foreground">Name</th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-foreground">Address</th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-foreground">City</th>
               </tr>
             </thead>
             <tbody>
               {destinations.map((dest: any) => (
-                <tr key={dest.id} className="border-b border-border hover:bg-gray-50 transition-colors">
-                  <td className="px-6 py-4 text-sm text-text-primary font-medium">{dest.name}</td>
-                  <td className="px-6 py-4 text-sm text-text-secondary">{dest.address}</td>
-                  <td className="px-6 py-4 text-sm text-text-secondary">{dest.city}</td>
+                <tr key={dest.id} className="border-b border-border hover:bg-accent/50 transition-colors">
+                  <td className="px-6 py-4 text-sm text-foreground font-medium">{dest.name}</td>
+                  <td className="px-6 py-4 text-sm text-muted-foreground">{dest.address}</td>
+                  <td className="px-6 py-4 text-sm text-muted-foreground">{dest.city}</td>
                 </tr>
               ))}
             </tbody>

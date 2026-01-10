@@ -36,32 +36,32 @@ export default function ViewIncidentPage() {
     <div className="space-y-6">
       <BackButton />
 
-      <h1 className="text-3xl font-bold text-text-primary">Incident #{incident.id}</h1>
+      <h1 className="text-3xl font-bold text-foreground">Incident #{incident.id}</h1>
 
-      <div className="bg-surface rounded-xl border border-border shadow-sm p-6">
+      <div className="bg-card rounded-xl border border-border shadow-sm p-6">
         <div className="space-y-4">
           <div>
-            <h3 className="text-sm font-medium text-text-secondary mb-1">Expédition</h3>
-            <p className="text-lg font-semibold">ID: {incident.shipment}</p>
+            <h3 className="text-sm font-medium text-muted-foreground mb-1">Expédition</h3>
+            <p className="text-lg font-semibold text-foreground">ID: {incident.shipment}</p>
           </div>
 
           <div>
-            <h3 className="text-sm font-medium text-text-secondary mb-1">Date</h3>
-            <p className="text-lg">{new Date(incident.date).toLocaleString('fr-FR')}</p>
+            <h3 className="text-sm font-medium text-muted-foreground mb-1">Date</h3>
+            <p className="text-lg text-foreground">{new Date(incident.date).toLocaleString('fr-FR')}</p>
           </div>
 
           <div>
-            <h3 className="text-sm font-medium text-text-secondary mb-1">Statut</h3>
+            <h3 className="text-sm font-medium text-muted-foreground mb-1">Statut</h3>
             <span className={`px-3 py-1 text-xs font-medium rounded-full ${
-              incident.status === 'RESOLVED' ? 'bg-green-100 text-success' : 'bg-red-100 text-error'
+              incident.status === 'RESOLVED' ? 'bg-green-100 text-success dark:bg-green-900/30 dark:text-green-300' : 'bg-red-100 text-error dark:bg-red-900/30 dark:text-red-300'
             }`}>
               {incident.status === 'RESOLVED' ? 'Résolu' : 'Ouvert'}
             </span>
           </div>
 
           <div>
-            <h3 className="text-sm font-medium text-text-secondary mb-1">Description</h3>
-            <p className="text-lg whitespace-pre-wrap">{incident.description}</p>
+            <h3 className="text-sm font-medium text-muted-foreground mb-1">Description</h3>
+            <p className="text-lg whitespace-pre-wrap text-foreground">{incident.description}</p>
           </div>
         </div>
       </div>

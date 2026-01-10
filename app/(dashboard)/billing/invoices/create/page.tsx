@@ -99,9 +99,9 @@ export default function CreateInvoicePage() {
     <div className="space-y-6">
       <BackButton />
 
-      <h1 className="text-3xl font-bold text-text-primary">Créer Facture</h1>
+      <h1 className="text-3xl font-bold text-foreground">Créer Facture</h1>
 
-      <div className="bg-surface rounded-xl border border-border shadow-sm p-6">
+      <div className="bg-card rounded-xl border border-border shadow-sm p-6">
         <form className="space-y-6" onSubmit={handleSubmit}>
           {shipment && (
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
@@ -134,7 +134,7 @@ export default function CreateInvoicePage() {
                 type="number"
                 value={formData.amount_ht.toFixed(2)}
                 readOnly
-                className="w-full px-4 py-3 border border-border rounded-lg bg-gray-50 focus:outline-none"
+                className="w-full px-4 py-3 border border-border rounded-lg bg-muted/50 focus:outline-none"
               />
             </div>
             <div>
@@ -143,7 +143,7 @@ export default function CreateInvoicePage() {
                 type="number"
                 value={formData.tva.toFixed(2)}
                 readOnly
-                className="w-full px-4 py-3 border border-border rounded-lg bg-gray-50 focus:outline-none"
+                className="w-full px-4 py-3 border border-border rounded-lg bg-muted/50 focus:outline-none"
               />
             </div>
             <div>
@@ -167,14 +167,14 @@ export default function CreateInvoicePage() {
               className="w-full px-4 py-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
               placeholder="0.00"
             />
-            <p className="text-sm text-text-secondary mt-2">
+            <p className="text-sm text-muted-foreground mt-2">
               Solde restant: {(formData.amount_ttc - formData.paid_amount).toFixed(2)} DA
             </p>
           </div>
 
-          <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-            <h4 className="font-semibold mb-2">Calcul du Prix</h4>
-            <p className="text-sm text-gray-600">
+          <div className="bg-muted/50 border border-border rounded-lg p-4">
+            <h4 className="font-semibold mb-2 text-foreground">Calcul du Prix</h4>
+            <p className="text-sm text-muted-foreground">
               Le prix est calculé automatiquement selon la règle de tarification:
               <br />
               <span className="font-mono">Prix = Tarif de Base + (Poids × Tarif/kg) + (Volume × Tarif/m³)</span>
@@ -187,7 +187,7 @@ export default function CreateInvoicePage() {
             <button
               type="button"
               onClick={() => router.push("/billing/invoices")}
-              className="px-6 py-3 border border-border rounded-lg font-semibold hover:bg-gray-50 transition-all duration-200 hover:scale-105 active:scale-95 hover:shadow-sm"
+              className="px-6 py-3 border border-border rounded-lg font-semibold hover:bg-accent transition-all duration-200 hover:scale-105 active:scale-95 hover:shadow-sm"
             >
               Annuler
             </button>

@@ -77,34 +77,34 @@ export default function EditShipmentPage() {
     <div className="space-y-6">
       <BackButton />
 
-      <h1 className="text-3xl font-bold text-text-primary">Modifier le statut de l'expédition</h1>
+      <h1 className="text-3xl font-bold text-foreground">Modifier le statut de l'expédition</h1>
 
-      <div className="bg-surface rounded-xl border border-border shadow-sm p-6">
+      <div className="bg-card rounded-xl border border-border shadow-sm p-6">
         <div className="mb-6 pb-6 border-b border-border">
           <h2 className="text-lg font-semibold mb-4">Informations de l'expédition</h2>
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div>
-              <span className="text-text-secondary">N° de suivi:</span>
-              <span className="ml-2 font-medium">{shipment.tracking_number}</span>
+              <span className="text-muted-foreground">N° de suivi:</span>
+              <span className="ml-2 font-medium text-foreground">{shipment.tracking_number}</span>
             </div>
             <div>
-              <span className="text-text-secondary">Client:</span>
-              <span className="ml-2 font-medium">{shipment.client_name}</span>
+              <span className="text-muted-foreground">Client:</span>
+              <span className="ml-2 font-medium text-foreground">{shipment.client_name}</span>
             </div>
             <div>
-              <span className="text-text-secondary">Destination:</span>
-              <span className="ml-2 font-medium">{shipment.destination_name}</span>
+              <span className="text-muted-foreground">Destination:</span>
+              <span className="ml-2 font-medium text-foreground">{shipment.destination_name}</span>
             </div>
             <div>
-              <span className="text-text-secondary">Poids:</span>
-              <span className="ml-2 font-medium">{shipment.weight} kg</span>
+              <span className="text-muted-foreground">Poids:</span>
+              <span className="ml-2 font-medium text-foreground">{shipment.weight} kg</span>
             </div>
           </div>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label className="block text-sm font-medium text-text-primary mb-2">
+            <label className="block text-sm font-medium text-foreground mb-2">
               Statut de l'expédition
             </label>
             <select
@@ -133,7 +133,7 @@ export default function EditShipmentPage() {
             <button
               type="button"
               onClick={() => router.push('/shipments/journal')}
-              className="px-6 py-3 bg-gray-200 text-text-primary rounded-lg font-semibold hover:bg-gray-300 transition-all duration-200"
+              className="px-6 py-3 bg-muted text-foreground rounded-lg font-semibold hover:bg-accent transition-all duration-200"
             >
               Annuler
             </button>

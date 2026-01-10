@@ -37,25 +37,25 @@ export default function CreateDriverPage() {
     <div className="space-y-6">
       <BackButton />
 
-      <h1 className="text-3xl font-bold text-text-primary">Add Driver</h1>
+      <h1 className="text-3xl font-bold text-foreground">Add Driver</h1>
 
-      <div className="bg-surface rounded-xl border border-border shadow-sm p-6">
+      <div className="bg-card rounded-xl border border-border shadow-sm p-6">
         <form className="space-y-6" onSubmit={handleSubmit}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label className="block text-sm font-medium mb-2">Full Name</label>
+              <label className="block text-sm font-medium mb-2 text-foreground">Full Name</label>
               <input
                 type="text"
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                className="w-full px-4 py-3 border border-border rounded-lg bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
                 placeholder="Enter driver's full name"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-2">License Number</label>
+              <label className="block text-sm font-medium mb-2 text-foreground">License Number</label>
               <input
                 type="text"
                 name="license_number"
@@ -64,15 +64,15 @@ export default function CreateDriverPage() {
                 required
                 pattern="\d{8}"
                 maxLength={8}
-                className="w-full px-4 py-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                className="w-full px-4 py-3 border border-border rounded-lg bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
                 placeholder="01123456 (8 chiffres)"
               />
-              <p className="text-xs text-gray-500 mt-1">Format: 2 chiffres wilaya + 6 chiffres</p>
+              <p className="text-xs text-muted-foreground mt-1">Format: 2 chiffres wilaya + 6 chiffres</p>
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-2">Phone Number</label>
+            <label className="block text-sm font-medium mb-2 text-foreground">Phone Number</label>
             <input
               type="tel"
               name="phone"
@@ -80,7 +80,7 @@ export default function CreateDriverPage() {
               onChange={handleChange}
               required
               pattern="[0-9]{10}"
-              className="w-full px-4 py-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+              className="w-full px-4 py-3 border border-border rounded-lg bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
               placeholder="0555123456 (10 chiffres)"
             />
           </div>
@@ -89,7 +89,7 @@ export default function CreateDriverPage() {
             <button
               type="button"
               onClick={() => router.push("/drivers")}
-              className="px-6 py-3 border border-border rounded-lg font-semibold hover:bg-gray-50 transition-all duration-200 hover:scale-105 active:scale-95 hover:shadow-sm"
+              className="px-6 py-3 border border-border rounded-lg font-semibold text-foreground bg-card hover:bg-accent transition-all duration-200 hover:scale-105 active:scale-95 hover:shadow-sm"
             >
               Cancel
             </button>

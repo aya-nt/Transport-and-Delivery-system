@@ -3,7 +3,9 @@
 import type React from "react"
 
 import { useState, useEffect } from "react"
+import { useRouter } from "next/navigation"
 import { userApi } from "@/lib/api"
+import Link from "next/link"
 
 export default function ProfilePage() {
   const [formData, setFormData] = useState({
@@ -53,9 +55,16 @@ export default function ProfilePage() {
 
   return (
     <div className="space-y-6 max-w-2xl">
-      <h1 className="text-3xl font-bold text-text-primary">Profile Management</h1>
+      <h1 className="text-3xl font-bold text-foreground">Profile Management</h1>
 
-      <div className="bg-surface rounded-xl border border-border shadow-sm p-6">
+      <Link
+        href="/settings/change-password"
+        className="inline-block px-4 py-2 text-primary hover:underline font-medium transition-colors"
+      >
+        Change Password →
+      </Link>
+
+      <div className="bg-card rounded-xl border border-border shadow-card p-6">
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
             <label className="block text-sm font-medium mb-2">Username</label>
@@ -63,7 +72,7 @@ export default function ProfilePage() {
               type="text"
               value={formData.username}
               disabled
-              className="w-full px-4 py-3 border border-border rounded-lg bg-gray-100 cursor-not-allowed"
+              className="w-full px-4 py-3 border border-border rounded-lg bg-muted cursor-not-allowed text-muted-foreground"
             />
           </div>
 

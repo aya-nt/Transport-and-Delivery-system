@@ -61,9 +61,9 @@ export default function ReportIncidentPage() {
     <div className="space-y-6">
       <BackButton />
 
-      <h1 className="text-3xl font-bold text-text-primary">Signaler un Incident</h1>
+      <h1 className="text-3xl font-bold text-foreground">Signaler un Incident</h1>
 
-      <div className="bg-surface rounded-xl border border-border shadow-sm p-6">
+      <div className="bg-card rounded-xl border border-border shadow-sm p-6">
         <form className="space-y-6" onSubmit={handleSubmit}>
           <div>
             <label className="block text-sm font-medium mb-2">Expédition</label>
@@ -83,14 +83,14 @@ export default function ReportIncidentPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-2">Type d'incident (optionnel)</label>
+            <label className="block text-sm font-medium mb-2 text-foreground">Type d'incident (optionnel)</label>
             <div className="flex flex-wrap gap-2 mb-3">
               {incidentTypes.map((type) => (
                 <button
                   key={type}
                   type="button"
                   onClick={() => setFormData({...formData, description: type + ": "})}
-                  className="px-3 py-1 text-sm border border-border rounded-lg hover:bg-gray-50 transition-colors"
+                  className="px-3 py-1 text-sm border border-border rounded-lg text-foreground bg-card hover:bg-accent transition-colors"
                 >
                   {type}
                 </button>
@@ -114,14 +114,14 @@ export default function ReportIncidentPage() {
             <button
               type="button"
               onClick={() => router.push('/incidents')}
-              className="px-6 py-3 border border-border rounded-lg font-semibold hover:bg-gray-50 transition-colors"
+              className="px-6 py-3 border border-border rounded-lg font-semibold text-foreground bg-card hover:bg-accent transition-all hover:scale-105 active:scale-95"
             >
               Annuler
             </button>
             <button
               type="submit"
               disabled={submitting}
-              className="px-6 py-3 bg-primary text-white rounded-lg font-semibold hover:bg-primary-dark transition-colors disabled:opacity-50"
+              className="px-6 py-3 bg-primary text-white rounded-lg font-semibold hover:bg-primary-dark hover:shadow-lg hover:scale-105 active:scale-95 transition-all disabled:opacity-50"
             >
               {submitting ? 'Envoi...' : 'Signaler'}
             </button>
