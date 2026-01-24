@@ -1,0 +1,103 @@
+{
+  "description": "Complete Next.js App Router Folder Structure for Transport & Delivery Management System",
+  "structure": {
+    "app": {
+      "(auth)": {
+        "layout.tsx": "Authentication layout with centered forms",
+        "login": {
+          "page.tsx": "Login page"
+        },
+        "forgot-password": {
+          "page.tsx": "Forgot password page"
+        },
+        "reset-password": {
+          "page.tsx": "Password reset page"
+        }
+      },
+      "(dashboard)": {
+        "layout.tsx": "Main dashboard layout with sidebar and header",
+        "dashboard": {
+          "page.tsx": "Dashboard with metrics, charts, quick actions"
+        },
+        "favorites": {
+          "page.tsx": "Favorites/quick access page"
+        },
+        "clients": {
+          "page.tsx": "Clients CRUD table"
+        },
+        "drivers": {
+          "page.tsx": "Drivers CRUD table"
+        },
+        "vehicles": {
+          "page.tsx": "Vehicles CRUD table"
+        },
+        "destinations": {
+          "page.tsx": "Destinations CRUD table"
+        },
+        "service-types": {
+          "page.tsx": "Service types CRUD table"
+        },
+        "pricing": {
+          "page.tsx": "Pricing CRUD table"
+        },
+        "shipments": {
+          "create": {
+            "page.tsx": "Create shipment form"
+          },
+          "journal": {
+            "page.tsx": "Shipments journal/history"
+          }
+        },
+        "tracking": {
+          "page.tsx": "Tracking page with map and timeline"
+        },
+        "tours": {
+          "page.tsx": "Delivery tours management"
+        },
+        "billing": {
+          "invoices": {
+            "page.tsx": "Invoices management"
+          },
+          "payments": {
+            "page.tsx": "Payments management"
+          },
+          "journals": {
+            "page.tsx": "Financial journals"
+          }
+        },
+        "incidents": {
+          "page.tsx": "Incidents list",
+          "report": {
+            "page.tsx": "Report incident form"
+          }
+        }
+      },
+      "(settings)": {
+        "layout.tsx": "Settings layout with sidebar navigation",
+        "settings": {
+          "profile": {
+            "page.tsx": "Profile management page"
+          },
+          "roles": {
+            "page.tsx": "Roles & permissions (admin only)"
+          },
+          "change-password": {
+            "page.tsx": "Change password page"
+          }
+        }
+      },
+      "layout.tsx": "Root layout with fonts and global styles",
+      "globals.css": "Global styles with Tailwind v4 and design tokens",
+      "page.tsx": "Root redirect to dashboard"
+    },
+    "components": {
+      "layout": {
+        "sidebar.tsx": "Main navigation sidebar",
+        "header.tsx": "Top header with search and user menu"
+      },
+      "ui": {
+        "note": "shadcn/ui components auto-generated (button, card, table, etc.)"
+      }
+    }
+  }
+}

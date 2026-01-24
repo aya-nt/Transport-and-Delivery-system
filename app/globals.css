@@ -1,0 +1,167 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  --background: 252 252 255;
+  --foreground: 20 20 30;
+  --card: 255 255 255;
+  --card-foreground: 20 20 30;
+  --popover: 255 255 255;
+  --popover-foreground: 20 20 30;
+  --primary: 124 58 237;
+  --primary-foreground: 255 255 255;
+  --secondary: 245 243 255;
+  --secondary-foreground: 124 58 237;
+  --muted: 243 244 246;
+  --muted-foreground: 107 114 128;
+  --accent: 237 233 254;
+  --accent-foreground: 109 40 217;
+  --destructive: 239 68 68;
+  --destructive-foreground: 255 255 255;
+  --border: 229 231 235;
+  --input: 229 231 235;
+  --ring: 124 58 237;
+  --success: 34 197 94;
+  --success-foreground: 255 255 255;
+  --warning: 251 146 60;
+  --warning-foreground: 255 255 255;
+  --chart-1: 124 58 237;
+  --chart-2: 236 72 153;
+  --chart-3: 192 132 252;
+  --chart-4: 167 139 250;
+  --chart-5: 217 70 239;
+  --radius: 1.25rem;
+  --sidebar: 255 255 255;
+  --sidebar-foreground: 20 20 30;
+  --sidebar-primary: 124 58 237;
+  --sidebar-primary-foreground: 255 255 255;
+  --sidebar-accent: 245 243 255;
+  --sidebar-accent-foreground: 124 58 237;
+  --sidebar-border: 229 231 235;
+  --sidebar-ring: 124 58 237;
+}
+
+.dark {
+  --background: 30 30 46;
+  --foreground: 242 242 247;
+  --card: 39 39 63;
+  --card-foreground: 242 242 247;
+  --popover: 39 39 63;
+  --popover-foreground: 242 242 247;
+  --primary: 167 139 250;
+  --primary-foreground: 255 255 255;
+  --secondary: 49 46 129;
+  --secondary-foreground: 242 242 247;
+  --muted: 55 65 81;
+  --muted-foreground: 156 163 175;
+  --accent: 88 28 135;
+  --accent-foreground: 242 242 247;
+  --destructive: 220 38 38;
+  --destructive-foreground: 242 242 247;
+  --border: 55 65 81;
+  --input: 55 65 81;
+  --ring: 167 139 250;
+  --success: 22 163 74;
+  --success-foreground: 255 255 255;
+  --warning: 234 88 12;
+  --warning-foreground: 255 255 255;
+  --chart-1: 167 139 250;
+  --chart-2: 236 72 153;
+  --chart-3: 192 132 252;
+  --chart-4: 147 51 234;
+  --chart-5: 217 70 239;
+  --sidebar: 30 30 46;
+  --sidebar-foreground: 242 242 247;
+  --sidebar-primary: 167 139 250;
+  --sidebar-primary-foreground: 255 255 255;
+  --sidebar-accent: 49 46 129;
+  --sidebar-accent-foreground: 242 242 247;
+  --sidebar-border: 55 65 81;
+  --sidebar-ring: 167 139 250;
+}
+
+@theme inline {
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --color-background: rgb(var(--background));
+  --color-foreground: rgb(var(--foreground));
+  --color-card: rgb(var(--card));
+  --color-card-foreground: rgb(var(--card-foreground));
+  --color-popover: rgb(var(--popover));
+  --color-popover-foreground: rgb(var(--popover-foreground));
+  --color-primary: rgb(var(--primary));
+  --color-primary-foreground: rgb(var(--primary-foreground));
+  --color-secondary: rgb(var(--secondary));
+  --color-secondary-foreground: rgb(var(--secondary-foreground));
+  --color-muted: rgb(var(--muted));
+  --color-muted-foreground: rgb(var(--muted-foreground));
+  --color-accent: rgb(var(--accent));
+  --color-accent-foreground: rgb(var(--accent-foreground));
+  --color-destructive: rgb(var(--destructive));
+  --color-destructive-foreground: rgb(var(--destructive-foreground));
+  --color-success: rgb(var(--success));
+  --color-success-foreground: rgb(var(--success-foreground));
+  --color-warning: rgb(var(--warning));
+  --color-warning-foreground: rgb(var(--warning-foreground));
+  --color-border: rgb(var(--border));
+  --color-input: rgb(var(--input));
+  --color-ring: rgb(var(--ring));
+  --color-chart-1: rgb(var(--chart-1));
+  --color-chart-2: rgb(var(--chart-2));
+  --color-chart-3: rgb(var(--chart-3));
+  --color-chart-4: rgb(var(--chart-4));
+  --color-chart-5: rgb(var(--chart-5));
+  --radius-sm: calc(var(--radius) - 0.5rem);
+  --radius-md: calc(var(--radius) - 0.25rem);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 0.5rem);
+  --color-sidebar: rgb(var(--sidebar));
+  --color-sidebar-foreground: rgb(var(--sidebar-foreground));
+  --color-sidebar-primary: rgb(var(--sidebar-primary));
+  --color-sidebar-primary-foreground: rgb(var(--sidebar-primary-foreground));
+  --color-sidebar-accent: rgb(var(--sidebar-accent));
+  --color-sidebar-accent-foreground: rgb(var(--sidebar-accent-foreground));
+  --color-sidebar-border: rgb(var(--sidebar-border));
+  --color-sidebar-ring: rgb(var(--sidebar-ring));
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+}
+
+@layer utilities {
+  .gradient-purple {
+    background: linear-gradient(135deg, rgb(var(--primary)) 0%, rgb(var(--chart-2)) 100%);
+  }
+  .gradient-purple-soft {
+    background: linear-gradient(135deg, rgb(var(--chart-3)) 0%, rgb(var(--chart-2)) 100%);
+  }
+  .shadow-card {
+    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  }
+  .dark .shadow-card {
+    box-shadow: none;
+  }
+  
+  /* Form input defaults */
+  input[type="text"],
+  input[type="email"],
+  input[type="tel"],
+  input[type="number"],
+  input[type="password"],
+  input[type="date"],
+  select,
+  textarea {
+    @apply bg-background text-foreground;
+  }
+  
+  select option {
+    @apply bg-background text-foreground;
+  }
+}
