@@ -95,7 +95,6 @@ export default function TrackingPage() {
   }
 
   const handleTabSwitch = (tab: "details" | "tracking" | "invoice") => {
-    console.log("[v0] Switching to tab:", tab)
     setActiveTab(tab)
   }
 

@@ -14,7 +14,6 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "SwiftDeliver - Transport & Delivery Management",
   description: "Professional transport and delivery management platform for modern logistics",
-  generator: "v0.app",
   icons: {
     icon: [
       {

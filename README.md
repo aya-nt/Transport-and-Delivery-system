@@ -83,9 +83,7 @@ The tracking feature uses Google Maps to display shipment locations and routes. 
 ### Frontend Setup
 
 1. Make sure you're in the root directory:
-   ```bash
-   cd c:\Users\hibaf\Documents\HIBA\Transport-and-Delivery-system
-   ```
+ 
 
 2. If you encounter a "Module not found: Can't resolve '@react-google-maps/api'" error:
    ```bash
